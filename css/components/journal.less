@@ -1,0 +1,227 @@
+/*!
+ * JOURNAL
+ *
+ * Styling for journal page
+ */
+
+#journal {
+  #progress {
+    .progress-wrapper {
+      position: relative;
+      display: table;
+      width: 100%;
+
+      .progress-circle {
+        position: relative;
+        display: table-cell;
+
+        .progress-general-info {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          -webkit-transform: translate(-50%,-50%);
+          -ms-transform: translate(-50%,-50%);
+          transform: translate(-50%,-50%);
+
+          .percent {
+            font-size: 30px;
+          }
+        }
+      }
+
+      .progress-detailed-info {
+        vertical-align: middle;
+
+        span {
+          display: inline-block;
+          margin-bottom: 10px;
+        }
+      }
+    }
+  }
+
+  #journal-tabs {
+    padding: 0 10px;
+
+    .tab-header {
+      a {
+        .transition-all();
+
+        &.active {
+          color: @theme;
+          border-bottom: 2px solid @theme-lighter-1;
+        }
+
+        &:not(.active) {
+          color: @grey-lighter-4;
+        }
+      }
+
+      .indicator {
+        display: none;
+//        background: @theme-lighter-2;
+      }
+    }
+
+    .tab-content {
+      > div {
+        background: @white;
+        padding: 10px;
+
+        &#tab-note, &#tab-photo {
+          display: none;
+        }
+
+        .mood-data {
+          position: relative;
+          height: 200px;
+
+          .emoji-list {
+            float: left;
+            width: 10%;
+            height: 100%;
+
+            .emoji-list-item {
+              float: left;
+              width: 100%;
+              height: 20%;
+            }
+
+            .emoji {
+              width: 25px;
+              height: 100%;
+              background-repeat: no-repeat;
+              background-position: center center;
+              background-size: contain;
+              float: left;
+            }
+          }
+
+          .mood-map {
+            float: left;
+            width: 90%;
+            height: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+
+            canvas {
+              height: 100%
+            }
+          }
+        }
+
+        .note-container {
+          .note-content {
+            padding: 10px 0;
+            border-bottom: 1px solid lighten(@grey-lighter-4, 30%);
+
+            .note-time {
+              color: @theme-lighter-1;
+              font-size: 12px;
+              margin-bottom: 7px;
+            }
+          }
+        }
+
+        .photo-container {
+          width: 100%;
+
+          img {
+            width: 45%;
+            float: left;
+            margin: 2%;
+          }
+
+          .free-wall {
+            margin: 15px;
+          }
+        }
+
+        .groups-container {
+          li {
+            cursor: pointer;
+            min-height: 70px;
+            width: 100%;
+            .transition-all();
+
+            img {
+              border-radius: 0 !important;
+            }
+
+            &:hover, &.active {
+              background: #F1F1F1;
+
+              p {
+                color: @black;
+              }
+
+              .secondary-content {
+                top: 22px;
+                right: 0px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 500px) {
+  #journal {
+    .progress-detailed-info {
+      display: table-cell;
+    }
+  }
+}
+
+@media screen and (max-width: 499px) {
+  #journal {
+    .progress-general-info {
+      .percent {
+        font-size: 25px;
+      }
+
+      .days {
+        font-size: 11px;
+      }
+    }
+
+    .progress-detailed-info {
+      display: none;
+    }
+  }
+}
+
+
+.emoji-1 {
+  background-image: url('../../images/emoji-1-fantastic-active.png');
+}
+.emoji-2 {
+  background-image: url('../../images/emoji-2-pretty-good-active.png');
+}
+.emoji-3 {
+  background-image: url('../../images/emoji-3-okey-active.png');
+}
+.emoji-4 {
+  background-image: url('../../images/emoji-4-not-great-active.png');
+}
+.emoji-5 {
+  background-image: url('../../images/emoji-5-terrible-active.png');
+}
+
+.emoji-1-small {
+  background-image: url('../../images/emoji-1-fantastic-active-small.png');
+}
+.emoji-2-small {
+  background-image: url('../../images/emoji-2-pretty-good-active-small.png');
+}
+.emoji-3-small {
+  background-image: url('../../images/emoji-3-okey-active-small.png');
+}
+.emoji-4-small {
+  background-image: url('../../images/emoji-4-not-great-active-small.png');
+}
+.emoji-5-small {
+  background-image: url('../../images/emoji-5-terrible-active-small.png');
+}

@@ -1,0 +1,67 @@
+<div class="signup prelogin-page scrollable-wrapper">
+	<alert-error ng-show="flash"></alert-error>
+	<div class="row">
+		<div class="col s12 m7 l6 content-wrap card-panel white">
+			<div id="logo"></div>
+			<form id="signup-form" class="login-form" method="post" autocomplete="false" >
+				<div class="form-step" ng-show="showStep1" id="signup-step1">
+					<h3>PERSONAL INFO</h3>
+					<div class="error-message red-text">{{errorMessage1}}</div>
+					<div class="input-field">
+						<input placeholder="First Name" id="signup-firstname" ng-model='newuser.firstname' type='text'>
+					</div>
+					<div class="input-field">
+						<input placeholder="Last Name" id="signup-lastname" ng-model='newuser.lastname' type='text'>
+					</div>
+					<p class="btn-wrap">
+						<a class='btn theme' href="/#/">CANCEL</a>
+						<button class='btn green right' id="enter-step2-btn" ng-click="enterStep2()">NEXT</button>
+					</p>
+				</div>
+				<div class="form-step" ng-show="showStep2" id="signup-step2">
+					<h3>LOGIN DETAIL</h3>
+					<div class="error-message red-text">{{errorMessage2}}</div>
+					<div class="input-field">
+						<input placeholder="Email" id="signup-email" ng-model='newuser.email' type='text'>
+					</div>
+					<div class="input-field">
+						<input placeholder="Password" id="signup-pass" ng-model='newuser.password' type='password'>
+					</div>
+					<div class="input-field">
+						<input placeholder="Confirm Password" id="signup-confirmpass" ng-model='newuser.confirmpassword' type='password'>
+					</div>
+					<p class="btn-wrap">
+						<a class='btn theme' ng-click="previousStep(1)">BACK</a>
+						<button class='btn green right' id="enter-step3-btn" ng-click="enterStep3()">NEXT</button>
+					</p>
+				</div>
+				<div class="form-step" ng-show="showStep3" id="signup-step3">
+					<h3>CONFIRMATION</h3>
+					<div class="error-message red-text">{{errorMessage3}}</div>
+					<div class="input-field">
+						<img id="secuimage" style="width:60%;" src="./securimage/securimage_show.php"><br><br>
+						<input placeholder="Answer to question above" id="signup-security" ng-model='newuser.securitycode' type='text'>
+					</div>
+					<div class="input-field">
+						<input ng-model='keycode' placeholder='Key Code' ng-disabled="{{isDisabled}}" type='text' id="keycode">
+					</div>
+					<p class="agreement-check">
+						<input type="checkbox" name="agree-to-legal" id="agree-to-legal" class="filled-in" ng-model="newuser.tos"/>
+						<label class="left-align" for="agree-to-legal">I agree to OAR21 End User Licence Agreement: <a ng-click="togglePopup('inactive')">View</a></label>
+					</p>
+					<p class="btn-wrap">
+						<a class='btn theme' ng-click="previousStep(2)">BACK</a>
+						<button class='btn green right' id="signup-btn" ng-click="signUp()">REGISTER</button>
+					</p>
+				</div>
+			</form>
+		</div>
+	</div>
+	<div class="popup-cover popup-inactive" >
+		<div class="popup-content-wrap popup-inactive">
+			<div id="terms-agreement" class="popup-content popup-inactive">
+				<terms-agreement></terms-agreement>
+			</div>
+		</div>
+	</div>
+</div>

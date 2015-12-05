@@ -1,0 +1,31 @@
+<div id="sp-nav">
+    <slide-menu></slide-menu>
+</div>
+<div id="sp-page">
+<page-header></page-header>
+<div class="content-wrapper">
+<!-- MESSAGES GROUP PAGE -->
+<div id="messages">
+
+   
+        <div  class="messages under-header-shadow content-body-without-btns scrollable-wrapper"><!-- groups -->
+            
+            <div class="group-list-item med-blue ng-scope" ng-repeat="group in groups" ng-click="messageGroupUser({{group.id}})" >
+            <div class="group-pic">
+                <img ng-src="{{group.thumbnailSrc}}" height="100%" src="{{group.thumbnailSrc}}">
+            </div>
+            <div class="team-name ng-binding">{{group.name}}</div>
+            <div class="team-numbers ng-binding"><i class="fa fa-group fa-lg"></i> {{group.members}}</div>
+  			</div>
+  			
+  			
+       	</div><!-- groups end -->
+
+       	
+
+  
+
+</div><!-- MESSAGES GROUP PAGE END -->	
+</div>
+<page-footer></page-footer>
+</div>

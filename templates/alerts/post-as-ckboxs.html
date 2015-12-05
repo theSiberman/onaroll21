@@ -1,0 +1,32 @@
+<div class="popdown header">
+	<div class="notification-type grey-blue"><h3>Post As :</h3></div>
+
+	<div class="post-as-notification-msg dark-blue">
+
+		<div class="post-as-ckbox-container">
+			<input type="checkbox" name="checkbox2" id="checkbox2" class="css-checkbox" ng-model="post.mission_completed" ng-click="printObject(); switchComplete()" />
+			<!-- <input type="checkbox" name="checkbox2a" id="checkbox2a" class="css-checkbox" checked="checked"/> -->
+			<label for="checkbox2" class="css-label checkbox-yellow"></label>
+			<div class="ckbox-description"><p>Mission<br>Completed</p></div>
+		</div>
+		<div class="post-as-ckbox-container">
+			<input type="checkbox" name="checkbox3" id="checkbox3" class="css-checkbox" ng-model="post.general" ng-click="printObject(); switchGeneral()" />
+			<!-- <input type="checkbox" name="checkbox3a" id="checkbox3a" class="css-checkbox" checked="checked"/> -->
+			<label for="checkbox3" class="css-label checkbox-yellow"></label>
+			<div class="ckbox-description"><p>General<br>Post</p></div>
+		</div>
+		<div class="post-as-ckbox-container">
+			<input type="checkbox" name="checkbox4" id="checkbox4" class="css-checkbox" ng-model="post.all_teams" ng-click="printObject(); switchAllteams()" />
+			<!-- <input type="checkbox" name="checkbox4a" id="checkbox4a" class="css-checkbox" checked="checked"/> -->
+			<label for="checkbox4" class="css-label checkbox-yellow"></label>
+			<div class="ckbox-description"><p>All Related<br>Teams</p></div>
+		</div>
+		<div class="post-as-ckbox-container">
+			<input type="checkbox" name="checkbox1" id="checkbox1" class="css-checkbox" ng-model="post.private" ng-click="printObject(); switchPrivate()" />
+			<!-- <input type="checkbox" name="checkbox1a" id="checkbox1a" class="css-checkbox" checked="checked"/> -->
+			<label for="checkbox1" class="css-label checkbox-yellow"></label>
+			<div class="ckbox-description"><p>Private<br>Journal Only</p></div>
+		</div>
+	</div>
+	<div class="highlight-bar cream"></div>
+</div><!-- POST AS END -->

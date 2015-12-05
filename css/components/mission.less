@@ -1,0 +1,61 @@
+/*!
+ * MISSION
+ *
+ * Styling for mission components
+ */
+
+#mission {
+  .mission-wrap {
+    > p {
+      padding: 20px 10px;
+      word-wrap: break-word;
+    }
+  }
+
+  .collapsible {
+    .collapsible-body {
+      > p {
+        font-size: 13px;
+        padding: 20px;
+
+        &#reference-text {
+//          word-break: break-all;
+        }
+
+        p {
+          padding: 0 !important;
+        }
+      }
+    }
+  }
+}
+
+#dice {
+  position: relative;
+  .diceNum {
+    width: 100%;
+    font-size: 30px;
+    color: @white;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 300;
+    position: absolute;
+    top: 35%;
+    text-align: center;
+    display: none;
+  }
+}
+
+.dice-container {
+    width: 100%;
+    height: 64%;
+}
+
+@media screen and (min-width: 500px) {
+  #mission {
+    .collapsible {
+      .collapsible-body {
+        display: block !important;
+      }
+    }
+  }
+}

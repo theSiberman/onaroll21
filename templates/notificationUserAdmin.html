@@ -1,0 +1,17 @@
+<!-- NOTIFICATIONS SETTINGS PAGE -->
+<div id="notification-admin" class="container">
+	<ul class="collection">
+		<li class="collection-item">
+			<input type="checkbox" name="notification-cb" id="notification-cb" class="filled-in" ng-model="notificationcb" ng-click="notificationcbFunction();"  />
+			<label for="notification-cb" class=""><p>Live App notifications</p></label>
+		</li>
+		<li class="collection-item">
+			<input type="checkbox" name="push-notification-cb" id="push-notification-cb" class="filled-in" ng-model="pushnotificationcb" ng-click="pushnotificationcbFnction();" />
+			<label for="push-notification-cb" class=""><p>Push notifications <span class="author-ref">(Mobile devices only)</span></p></label>
+		</li>
+		<li class="collection-item">
+			<input type="checkbox" name="email-notification-cb" id="email-notification-cb" class="filled-in" ng-model="emailnotificationcb" ng-click="emailnotificationcbFnction();" />
+			<label for="email-notification-cb" class=""><p>Email notifications <span class="author-ref">(Once per day)</span></p></label>
+		</li>
+	</ul>
+</div>

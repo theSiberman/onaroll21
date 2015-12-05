@@ -1,0 +1,30 @@
+<!-- NOTIFICATIONS PAGE -->
+<div id="notifications" class="container scrollable-wrapper">
+    <p ng-hide="notifications" class="center-align theme-text"><i class="fa fa-2x fa-spinner fa-pulse"></i></p>
+
+    <div ng-show="notifications" class="filter-icons-container">
+        <p class="left">Filter by:</p>
+        <div class="filter-icon" ng-click="filters.type = 'like'; filterLike(this);"><img id="filter-icon-like" src="images/icon/like-inactive.png" /></div>
+        <div class="filter-icon" ng-click="filters.type = 'comment'; filterComment(this);"><img id="filter-icon-comment" src="images/icon/comment-inactive.png" /></div>
+        <div class="filter-icon" ng-click="filters.type = 'message'; filterMsg(this);"><img id="filter-icon-message" src="images/icon/nav/message-inactive.png" /></div>
+    </div>
+
+    <ul ng-show="notifications" id="notifications-list" class="collection">
+        <li class="collection-item avatar" ng-repeat="notification in notifications | filter:filters" ng-click="redirectToTarget(notification.type, notification.source_id, notification.source_user_id)">
+            <!--<img ng-if="notification.title == 'new like'" src="/images/icon/like-active.png">-->
+            <!--<img ng-if="notification.title == 'new comment'" src="/images/icon/comment-active.png">-->
+            <!--<img ng-if="notification.title == 'new message'" src="/images/icon/nav/message-active.png">-->
+            <div class="avatar">
+                <div class="avatar-wrap">
+                    <img src="{{notification.src_user_pic}}" />
+                </div>
+            </div>
+            <span class="title theme-text">{{notification.username}}</span>
+            <p>
+                <span ng-if="notification.type == 'newgroupmessage' || notification.type == 'message'">sent you a message</span>
+                <span ng-if="notification.type != 'newgroupmessage' && notification.type != 'message'">{{notification.message}}</span>
+            </p>
+            <span class="time grey-text">{{humanReadable(notification.updated_at.date)}}</span>
+        </li>
+    </ul>
+</div>

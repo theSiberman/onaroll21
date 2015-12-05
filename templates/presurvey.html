@@ -1,0 +1,49 @@
+<div class="container survey-page">
+    <form method="POST" accept-charset="UTF-8" parsley-validate="" id="presurveyform">
+        <input type="hidden" name="surveyid" value="10" />
+        <input type="hidden" name="groupid" value="{{selectedGroupId}}" />
+        <input type="hidden" name="userid" value="{{userid}}" />
+        <input type="hidden" name="type" value="pre" />
+        <!-- PRE SURVEY PAGE -->
+        <h1 class="survey-header center-align">PRESURVEY</h1>
+        <p ng-hide="questions" class="center-align theme-text"><i class="fa fa-2x fa-spinner fa-pulse"></i></p>
+        <div class="survey-container card-panel no-padding" id="preSurveyContainer">
+            <div class="survey-questions" ng-repeat="question in questions"  ng-class-odd="'grey lighten-4'" ng-class-even="'grey lighten-3'">
+                <div class="theme-text"><b>{{$index + 1}}. </b> {{question.label}}
+                </div>
+                <div class="question-opinions">
+                    <div class="left">Strongly disagree</div>
+                    <div class="right">Strongly agree</div>
+                </div>
+                <div class="question-selection">
+                    <div class="radio-wrap center-align" ng-repeat="field in question.field_options.options">
+                        <input type="radio" value="{{field.label}}"
+                               name="{{question.cid}}" class="{{question.cid}}" ng-click="optionSelect('{{question.cid}}');" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="center-align" ng-show="questions">
+            <button ng-click="saveResponse();" class="btn theme">Submit</button>
+        </p>
+        <!-- /PRE SURVEY PAGE -->
+    </form>
+    <script>
+        /*
+         var qs = '{{questions}} ';
+         $(function() {
+         fb= new Formbuilder({
+
+         selector:'#preSurveyContainer',
+         bootstrapData: qs
+
+         });
+
+         });
+         */
+    </script>
+</div>
+
+
+

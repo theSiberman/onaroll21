@@ -1,0 +1,56 @@
+<!-- MISSION PAGE -->
+<div id="mission" class="container" ng-controller="MissionCtrl">
+    <div class="btn-group right-align">
+        <button class="btn theme" ng-hide="pendingTask" ng-click="navigateTo('play');">ROLL AGAIN</button>
+        <button class="btn green" ng-hide="pendingTask" ng-click="acceptMission();">ACCEPT</button>
+        <button class="btn theme" ng-show="pendingTask" ng-click="navigateTo('newpost');">NEW POST</button>
+    </div>
+    <div class="card-panel orange darken-1">
+        <div class="mission-wrap white-text">
+            <h1 class="center-align" ng-bind-html="missionTitle"></h1>
+            <p id="mission-content" ng-bind-html="todayMission"></p>
+        </div>
+    </div>
+    <ul class="collapsible" data-collapsible="expandable">
+        <li>
+            <div class="collapsible-header grey-text"><i class="fa fa-info-circle"></i><span>DID YOU KNOW?</span></div>
+            <div class="collapsible-body black-text"><p ng-bind-html="didyouknow"></p></div>
+        </li>
+        <li>
+            <div class="collapsible-header grey-text"><i class="fa fa-book"></i><span>REFERENCES</span></div>
+            <div class="collapsible-body black-text"><p id="reference-text" ng-bind-html="reference"></p></div>
+        </li>
+    </ul>
+</div>
+
+<!--<div id="mission" ng-controller="MissionCtrl">-->
+    <!--<div class="content content-wrapper">	-->
+        <!--<div  class="mission-container under-header-shadow scrollable-wrapper">-->
+            <!--<div  class="mission">-->
+
+                <!--<h1>{{missionTitle}}</h1>-->
+
+                <!--<div><p ng-bind-html="todayMission"></p></div>-->
+
+                <!--<button id="didyouknowBtn" ng-hide="!didyouknow || didyouknow == ''" ng-click="displayDidyouknow = !displayDidyouknow; toggleSection('#didyouknowBtn');"  class="button button-ora" style="float:none;">DID YOU KNOW</button>-->
+                <!---->
+                <!--<div id="didyouknow" ng-show="displayDidyouknow"><p ng-bind-html="didyouknow"></p></div>-->
+                <!---->
+                <!--<button id="referenceBtn" ng-hide="!reference || reference == ''" ng-click="displayReference = !displayReference; toggleSection('#referenceBtn');"  class="button button-ora" style="float:none;">REFERENCE</button>-->
+                <!---->
+                <!--<div id="reference" ng-show="displayReference"><p ng-bind-html="reference"></p></div>-->
+
+            <!--</div>-->
+        <!--</div>-->
+        <!--<button class="button button-light-blu button-half-width" ng-hide="pendingTask" ng-click="navigateTo('play');">-->
+            <!--ROLL AGAIN-->
+        <!--</button>-->
+        <!--<button class="button button-gre button-half-width" ng-hide="pendingTask" ng-click="acceptMission();">-->
+            <!--ACCEPT-->
+        <!--</button>-->
+        <!---->
+        <!--<button class="button button-light-blu" ng-show="pendingTask" ng-click="navigateTo('newpost');">-->
+            <!--NEW POST-->
+        <!--</button>-->
+    <!--</div>-->
+<!--</div>-->

@@ -1,0 +1,114 @@
+<div  id="posts-feed" class="container">
+    <!-- TEAM POSTS PAGE -->
+    <div class="btn-group right-align">
+        <a ng-click="navigateTo('newpost')" class="btn theme">NEW POST</a>&nbsp;&nbsp;
+        <a ng-click="navigateTo('mission')" class="btn orange darken-1" ng-show="pendingTask">MISSION</a>
+        <a ng-click="navigateTo('play')" class="btn green" ng-hide="pendingTask">ROLL</a>
+    </div>
+
+    <div class="popup-cover popup-inactive" >
+        <div class="popup-content-wrap popup-inactive">
+            <p id="image-spinner" class="center-align white-text"><i class="fa fa-2x fa-spinner fa-pulse"></i></p>
+            <div id="full-image" class="popup-content popup-inactive center-align"></div>
+        </div>
+    </div>
+
+    <div id="invisible-cover" class="hide" ng-click="hideDropdown()"></div>
+
+    <div id="team-posts">
+        <p class="loading-spinner center-align theme-text"><i class="fa fa-2x fa-spinner fa-pulse"></i></p>
+        <div id="post-{{post.id}}" class="post-wrapper card-panel" ng-repeat="post in posts">
+            <div ng-if="post.private == 0">
+                <div class="avatar left">
+                    <div class="avatar-wrap">
+                        <img ng-src="{{post.userImage}}"/>
+                    </div>
+                </div>
+                <div  class="post-info left">
+                    <div class="post-user theme-text"><h2>{{post.firstname}} {{post.lastname}}</h2></div>
+                    <div class="post-time grey-text darken-4"><span>{{humanReadable(post.updated_at)}}</span></div>
+                </div>
+
+                <div class="action-dropdown">
+                    <a class="grey-text toggle-link" ng-click="showDropdown(post.id)"><i class="fa fa-angle-down"></i></a>
+
+                    <ul class='card-panel action-list hide' id="dropdown-{{post.id}}">
+                        <li><a class="grey-text" ng-show="currentUser.id == post.user_id" ng-click="editPost('{{post.id}}');"><i class="fa fa-pencil"></i> Edit</a></li>
+                        <li><a class="grey-text" ng-show="currentUser.id != post.user_id" ng-click="report('{{post.id}}', '{{post.user_id}}', '{{post.group_id}}');"><i class="fa fa-exclamation-triangle"></i> Report</a></li>
+                        <li><a class="grey-text" ng-show="currentUser.id == post.user_id || currentUser.role == 1" ng-click="deletePost('{{post.id}}');"><i class="fa fa-trash-o"></i> Delete</a></li>
+                    </ul>
+                </div>
+
+                <div class="mission-description clearfix darken-1 closed" ng-hide="post.display_mission == 0" id="post-mission-{{post.id}}" ng-click="toggleText('{{post.id}}');">
+                    <div class="mission-title"><span class="icon plus"></span> <span>{{post.task_title}}</span></div>
+                    <div class="mission-content"><p ng-bind-html="post.task_content"></p></div>
+                </div>
+                <div class="post-text clearfix black-text">
+                    <p ng-bind-html="post.status_text"></p>
+
+                    <p class="post-video center-align" ng-if="testYoutube(post.status)" compile="post.status"></p>
+                </div>
+
+                <div class="center-align" ng-if="post.image">
+                    <div class="post-image center-align" ng-click="zoomImage(post.image)">
+                        <div class="image-hover-cover"></div>
+                        <img border="0" src='/phpthumb/phpThumb.php?src=/uploads/{{post.image.split("uploads/")[1].split("\"")[0]}}&h=500' alt="">
+                    </div>
+                </div>
+                <div class="post-footer black-text">
+                    <div ng-show="post.user_id != currentUser.id">
+                        <a class="post-likes left" ng-class="{liked: post.like}" ng-click="likePost(post)"><span class="icon like-inactive" ng-class="{'like-inactive': !post.like, 'like-active': post.like}"></span> <span class="grey-text number">{{post.likeCount}}</span></a>
+                        <!--<a class="post-likes left liked" ng-show="post.like" ng-click="likePost(post)"><span class="icon like-active"></span> <span class="grey-text number">{{post.likeCount}}</span></a>-->
+                    </div>
+                    <div ng-show="post.user_id == currentUser.id">
+                        <a class="post-likes left" ng-hide="post.like"><span class="icon like-inactive"></span> <span class="grey-text number">{{post.likeCount}}</span></a>
+                    </div>
+                    <div>
+                        <a class="post-comment left" ng-click="focusComment({{post.id}})"><span class="icon comment"></span> <span class="grey-text number">{{post.comments.length}}</span></a>
+                    </div>
+                    <!--<div class="post-report right" id="post-report-{{post.id}}"  ng-show="currentUser.id != post.user_id" ng-click="report('{{post.id}}', '{{post.user_id}}', '{{post.group_id}}');"><h2 class="grey-text darken-4"><i class="fa fa-exclamation-triangle"></i>Report</h2></div>-->
+                    <!--<div class="post-edit right" ng-show="currentUser.id == post.user_id" ng-click="editPost('{{post.id}}');"><h2 class=" grey-text darken-4"><i class="fa fa-edit"></i>Edit</h2></div>-->
+                    <!--div  class="post-add-comment"><h2>Comments</h2></div-->
+                </div>
+                <!--<div class="divider"></div>-->
+                <!--COMMENT-->
+                <div class="comments black-text" ng-repeat="comment in post.comments">
+                    <div class="avatar left">
+                        <div class="avatar-wrap">
+                            <img ng-src="{{comment.user.picture}}" />
+                        </div>
+                    </div>
+                    <div class="comment-info">
+                        <p class="comment-text">
+                            <span class="comment-user-name theme-text">{{comment.user.firstname}} {{comment.user.lastname}}</span>
+                            <span class="comment-time">{{ humanReadable(comment.created_at) }}</span>
+                            <span class="comment-report grey-text darken-4" id="comment-report-{{comment.id}}" ng-hide="" ng-show='' ng-click="reportComment('{{post.id}}', '{{ comment.id }}', '{{post.user_id}}', '{{post.group_id}}');"><i class="fa fa-exclamation-triangle"></i></span><br>
+                            <span class="comment-content">{{ comment.comment }}</span>
+                        </p>
+                    </div>
+                </div>
+                <!--COMMENT END-->
+                <div class="comment-new">
+                    <!--<div class="write-comment-drop-shad"></div>-->
+                    <form class="no-margin" id="new-comment-form" ng-keyup="$event.keyCode == 13 && addComment($event,post)">
+                        <input type="text" name="comment-new-text"  placeholder="write a comment..." ng-model="post.activecomment" />
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div ng-if="posts && posts.length < totalPosts" load-more-data class="center-align">
+            <p class="theme-text">
+                <!--<button class="btn theme" ng-click="loadMoreData()">-->
+                    <!--<span ng-show="!displayLoading">MORE...</span>-->
+                    <span ng-show="displayLoading"><i class="fa fa-1x fa-spinner fa-pulse"></i> loading more</span>
+                <!--</button>-->
+            </p>
+        </div><br>
+        <div ng-if="posts && posts.length == totalPosts" class="center-align grey-text">
+            <p>There is no more post to load.</p><br>
+        </div>
+        <!--<div class="animation_image" ng-show="displayLoading" align="center">-->
+            <!--<img src="/images/loading.gif" width="50" height="40" alt="" />-->
+        <!--</div>-->
+    </div><!-- team-posts end -->
+</div>

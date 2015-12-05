@@ -1,0 +1,166 @@
+/*!
+ * PRE LOGIN
+ *
+ * Styling for all pages outside of login
+ */
+
+.prelogin-page {
+    width: 100%;
+    height: 100%;
+    display: table;
+    position: absolute;
+
+    > .row {
+        display: table-cell;
+        vertical-align: middle;
+    }
+
+    .content-wrap {
+        float: none;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        padding-top: 30px;
+        padding-bottom: 10px;
+
+        h3 {
+            color: @theme;
+            text-align: center;
+        }
+
+        .text {
+            font-size: 0.9em;
+        }
+
+        .author-ref {
+            font-size: 0.8em;
+        }
+
+        form {
+            width: 95%;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+            overflow: hidden;
+
+            .input-field {
+                .icon {
+                    width: 8%;
+                    height: 30px;
+                    position: absolute;
+                    background-repeat: no-repeat;
+                    background-position: 0 0;
+                    background-size: 70%;
+
+                    &.username {
+                        background-image: url('../../images/icon/user.png');
+                    }
+
+                    &.password {
+                        background-image: url('../../images/icon/password.png');
+                    }
+                }
+
+                input[type="text"],
+                input[type="password"],
+                input[type="email"],
+                select,
+                textarea {
+                    border-bottom: 1px solid @theme;
+
+                    &.has-icon {
+                        padding-left: 8%;
+                    }
+                }
+            }
+
+            p {
+                &.agreement-check {
+                    margin-top: 10px;
+                    margin-bottom: 40px;
+                }
+
+                margin-top: 15px;
+                margin-bottom: 15px;
+
+                &.btn-wrap {
+                    .btn {
+                        width: 46%;
+                    }
+                }
+
+                a:not(.btn) {
+                    color: #9e9e9e;
+                }
+            }
+
+            label {
+//                color: @white !important;
+                font-weight: 400;
+            }
+        }
+
+        .info-wrap {
+            height: 50px;
+            padding-top: 20px;
+            margin-bottom: 10px;
+
+            .info-link {
+                color: @grey-lighter-4;
+                font-size: 18px;
+                border: 1px solid @grey-lighter-4;
+                border-radius: 50%;
+                width: 30px;
+                height: 30px;
+                padding-top: 5px;
+                display: inline-block;
+            }
+        }
+    }
+
+    &.signup {
+        #terms-agreement {
+            width: 70%;
+            height: 80%;
+            overflow-y: scroll;
+        }
+    }
+}
+
+@media screen and (min-width: 454px) {
+    .prelogin-page {
+        .content-wrap {
+            width: 400px !important;
+        }
+    }
+}
+
+@media screen and (max-width: 453px) {
+    .prelogin-page {
+        > .row {
+            background: @white;
+            height: 100%;
+            width: 100%;
+        }
+
+        .content-wrap {
+            box-shadow: none;
+        }
+    }
+
+    .login {
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            padding-left: 10% !important;
+        }
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .signup {
+        #terms-agreement {
+            width: 90% !important;
+            height: 85% !important;
+        }
+    }
+}

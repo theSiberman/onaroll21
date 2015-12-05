@@ -1,0 +1,105 @@
+/*!
+ * NOTIFICATIONS
+ *
+ * Styling for notification centre
+ */
+
+#notifications {
+  .filter-icons-container {
+    width: 100%;
+    height: 30px;
+    margin-top: 10px;
+
+    .filter-icon {
+      float: left;
+      margin-left: 15px;
+      cursor: pointer;
+
+      img {
+        height: 20px;
+      }
+    }
+  }
+
+  #notifications-list {
+    width: 100%;
+
+    li {
+      display: block;
+      min-height: 60px;
+      padding-top: 10px;
+      padding-left: 60px;
+      padding-bottom: 10px;
+      cursor: pointer;
+      .transition-all();
+
+      .avatar {
+        width: 30px;
+        height: 30px;
+        position: absolute;
+        left: 15px;
+        top: 15px;
+
+        .avatar-wrap {
+          width: 30px;
+          height: 30px;
+
+          img {
+            width: 30px;
+          }
+        }
+      }
+
+      .title {
+        font-size: 14px;
+      }
+
+      p {
+        font-size: 13px;
+      }
+
+      .time {
+        font-size: 12px;
+        position: absolute;
+        top: 10px;
+        right: 16px;
+      }
+
+      &:hover {
+        background: #F1F1F1;
+      }
+    }
+  }
+}
+
+.notification-alert, .message-alert {
+  display: none;
+  position: absolute;
+  color: @white;
+  top: 5px;
+  width: 20px;
+  height: 18px;
+  font-size: 11.5px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+@media screen and (min-width: 500px) {
+  .alert-mobile {
+    display: none !important;
+  }
+
+  .alert-desktop {
+    left: -15px;
+  }
+}
+
+@media screen and (max-width: 499px) {
+  .alert-mobile {
+    left: 55%;
+  }
+
+  .alert-desktop {
+    display: none !important;
+  }
+}

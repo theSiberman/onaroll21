@@ -1,0 +1,92 @@
+.main{
+    
+    width: 100%;
+    
+    background-image: url(../images/bg.png);
+    background-repeat: no-repeat;
+    
+    padding-bottom: 40px;
+    
+    bottom: 0px;
+   
+
+    /* Preserve aspet ratio */
+    height: 100%;
+    
+    background-size: cover;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	background-position: center center;
+    
+    background-attachment: fixed;
+    
+    
+}
+
+
+
+.login-panel{
+    
+    
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 300px;
+    
+}
+
+.login-padding{
+    
+    padding: 5px;
+    
+}
+
+
+
+#sidenav-overlay{
+    
+    z-index: -1;
+    
+}
+
+
+.content-wrapper{
+    
+    margin-top: 6%;
+    
+    
+}
+
+
+
+
+.page-title{
+    
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    
+    
+}
+
+
+
+
+
+/* FOR DESK TOP */
+
+
+
+@media only screen and (min-width: 768px) {
+    /* For desktop: */
+    .login-panel{
+        
+        width: 500px;
+        
+    }
+    
+}
+
+
+
+
+/* END FOR DESKTOP */

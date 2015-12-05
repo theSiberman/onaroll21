@@ -1,0 +1,15 @@
+<div class="footer">
+	
+    <button class="footer-btn prev-btn" go-back></button>
+    <button ng-click="navigateTo('main')" class="footer-btn profile-btn"></button>
+    <button ng-click="navigateTo('play')" ng-disabled="currentGroupNotSelected()" class="footer-btn play-btn"></button>
+    <button ng-click="navigateTo('messages')" ng-disabled="currentGroupNotSelected()" class="footer-btn msg-btn"></button>
+    <button ng-click="navigateTo('wall')" ng-disabled="currentGroupNotSelected()" class="footer-btn team-posts-btn"></button>
+    
+    <div class="footer-btn-label">PREVIOUS</div>
+    <div class="footer-btn-label">JOURNAL</div>
+    <div class="footer-btn-label">PLAY</div>
+    <div class="footer-btn-label">MESSAGES</div>
+    <div class="footer-btn-label">TEAM WALL</div>
+</div><!-- /footer -->
+<!-- /main wrapper -->

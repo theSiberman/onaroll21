@@ -1,0 +1,21 @@
+<!-- SUPPORT TICKET -->
+<div id="support-ticket" class="container card-panel">
+    <form id="feedbackForm" name="feedbackForm" ng-submit="sendTicket();">
+        <div class="input-field select-wrap">
+            <span class="select-arrow"></span>
+            <select class="browser-default has-border" ng-model="ticket.type">
+                <option value disabled selected>Select a ticket subject</option>
+                <option value="I have an idea!" >I have an idea!</option>
+                <option  value="I have a technical issue" >I have a technical issue</option>
+                <option  value="Report abuse" >Report abuse</option>
+                <option  value="Like to get involved!" >I'd like to get involved with the development of OAR21</option>
+            </select>
+        </div>
+        <div class="input-field">
+            <textarea name="status_text" ng-model="ticket.feedback" class="materialize-textarea"  placeholder="Write your feedback or tech support issue here..."></textarea>
+        </div>
+        <p class="right-align">
+            <button type="submit" form="feedbackForm" class="btn theme" value="Submit">SUBMIT</button>
+        </p>
+    </form>
+</div>

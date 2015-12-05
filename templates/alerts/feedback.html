@@ -1,0 +1,38 @@
+<div class="popdown" ng-controller="SupportTicketCtrl">
+	<div class="notification-type green"><h3>Rate completed mission</h3></div>
+
+	<div class="notification-msg dark-green">
+
+		<div class="star-container">
+			<div class="star star5" ng-click="activate('one',1)" ng-class="getClass(1)"></div>
+			<div class="mood-description"></div>
+		</div>
+		<div class="star-container">
+			<div class="star star4" ng-click="activate('two',2)" ng-class="getClass(2)"></div>
+			<div class="mood-description"></div>
+		</div>
+		<div class="star-container">
+			<div class="star star3" ng-click="activate('three',3)" ng-class="getClass(3)"></div>
+			<div class="mood-description"></div>
+		</div>
+		<div class="star-container">
+			<div class="star star2" ng-click="activate('four',4)" ng-class="getClass(4)"></div>
+			<div class="mood-description"></div>
+		</div>
+		<div class="star-container">
+			<div class="star" ng-click="activate('five',5)" ng-class="getClass(5)"></div>
+			<div class="mood-description"></div>
+		</div>
+		<div class="left txt-label txt-left">Dull as dishwater</div><div class="right txt-label txt-right">Super cool</div>
+	</div>
+
+    <div class="highlight-bar cream"></div>
+
+    <div class="feedback-msg dark-blue">
+		<div class="close-feedback" ng-controller="WallCtrl" ng-click="closePopup()"></div>
+        <div class="v-align-middle" ng-click="goto('feedback')">
+            <h3 class="left">Help us improve this app</h3>
+            <p class="left">Send any comments, amazing ideas, pesky issues</p>
+        </div>
+    </div>
+</div><!-- RATE MISSION END -->

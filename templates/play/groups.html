@@ -1,0 +1,46 @@
+<div class="groups-container">
+    <h3><i class="fa fa-users"> </i> {{ t('master.play') }}</h3>
+    {{ trans('master.playgroupsintro',array('name'=>Auth::user()->firstname)) }}
+    <div class="row">
+        @foreach($groups as $group)
+        <?php
+        $outcome = Outcome::find($group->outcome);
+	if(is_null($outcome))
+	    $taskcount=0;
+	else
+            $taskCount = $outcome->getTaskCount();
+        ?>
+        @if($taskCount >= 21 || Auth::user()->hasRole('admin'))
+        <div class="col-md-6 col-sm-12 group-tile">
+            <div class="row">
+                <div class="col-md-5 col-sm-5 col-xs-5">
+                    <img {{ $group->getThumbnailSrc('150x150') }} alt="..." class="group-picture" width="150px" height="150px" />
+                </div>
+
+                <div class="col-md-7 col-sm-7 col-xs-7">
+                    <div class="group-intro">
+                        <h5 class="group-name">{{ $group->name }}</h5>
+                        <span class="group-members-count">{{ HTML::link('/group/members/'.$group->id,$group->getUserCount().' '.t('master.members')) }}</span>
+                        @if($taskCount < 21)
+<!--                        <br /><span class="label label-warning">{{ Lang.get('master.fewtasks') }}</span><br />-->
+                        @endif
+<!--                        <span class="label label-info">{{ Lang.get('master.starttime').' '.date('d-M-Y',$group->timestart) }}</span>-->
+                    </div>
+
+                    <div class="group-options">
+                        <p>
+                            {{-- TODO: This button would go to the status page if there is a pending task --}}
+                            @if($group->timestart <= time() || $user->hasRole('admin'))
+                            {{ HTML::link('/play/group/'.$group->id,trans('master.play'),['class'=>'btn btn-small btn-success btn-sm']) }}
+                            @else
+                            {{ HTML::link('/play/group/'.$group->id,trans('master.play'),['class'=>'btn btn-small btn-success btn-sm','disabled'=>'disabled']) }}
+                            @endif
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+        @endforeach
+    </div>
+</div>

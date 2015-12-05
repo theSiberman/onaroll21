@@ -1,0 +1,18 @@
+<div class="forgot-password prelogin-page">
+	<div class="row">
+		<div class="col s12 m7 l6 content-wrap card-panel white">
+			<div id="logo"></div>
+			<form action="" class="login-form" method="post" ng-submit="resetPwd();">
+				<h3>RESET PASSWORD</h3>
+				<div class="error-message red-text">{{errorMessage}}</div>
+				<div class="input-field">
+					<input ng-model='emailforreset' placeholder='Enter your email here' type='email'>
+				</div>
+				<p class="btn-wrap">
+					<a class='btn theme' href="/#/">CANCEL</a>
+					<button type="submit" class='btn green right'>RESET</button>
+				</p>
+			</form>
+		</div>
+	</div>
+</div>

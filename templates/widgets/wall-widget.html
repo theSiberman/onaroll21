@@ -1,0 +1,16 @@
+<!-- PRIVATE NOTE -->
+<div class="note-container" ng-show="currentGroup">
+    <p class="grey-text" ng-if="posts.length == 0" style="text-align: center;"><br>You have no private notes at the moment<br></p>
+    <div class="note-content" ng-repeat="post in posts">
+        <div ng-if="post.private">
+            <div style="display:none;">{{$index + 1}}</div>
+            <div class="note-time"><h2>{{humanReadable(post.updated_at)}}</h2></div>
+            <p class="post-text grey-text" ng-bind-html="post.status_text | linky"></p>
+            <div class="post-image" ng-bind-html="post.image">
+            </div>
+        </div>
+    </div>
+    <div class="animation_image" ng-show="displayLoading" align="center">
+        <img src="/images/loading.gif" width="50" height="40" alt="" />
+    </div>
+</div>

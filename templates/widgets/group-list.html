@@ -1,0 +1,20 @@
+<!--<div  class="group-list-container">-->
+
+  <!--<div  class="group-list-item med-blue" ng-repeat="group in groups" ng-click="setCurrentGroup(group.id)">-->
+            <!--<div  class="group-pic">-->
+                <!--<img ng-src="{{group.thumbnailSrc}}" height="100%" />-->
+            <!--</div>-->
+            <!--<div  class="team-name">{{group.name}}</div>-->
+            <!--<div  class="team-numbers"><i class="fa fa-group fa-lg"></i> {{group.members}}</div>-->
+  <!--</div>-->
+
+<!--</div>-->
+<p ng-hide="groups" class="center-align theme-text"><i class="fa fa-2x fa-spinner fa-pulse"></i></p>
+<ul class="collection groups-container">
+    <li class="collection-item avatar" ng-repeat="group in groups" ng-click="setCurrentGroup(group.id)" ng-class="{active: group.id == currentGroup}">
+        <img ng-src="{{group.thumbnailSrc}}" class="circle" />
+        <span class="title theme-text">{{group.name}}</span>
+        <p>{{group.members}} members</p>
+        <a ng-show="group.id == currentGroup" class="secondary-content"><input type="checkbox" id="group-{{group.id}}" checked="checked" /><label for="group-{{group.id}}"></label></a>
+    </li>
+</ul>

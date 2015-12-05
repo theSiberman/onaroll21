@@ -1,0 +1,45 @@
+<div id="sp-nav">
+    <slide-menu></slide-menu>
+</div>
+<div id="sp-page">
+<page-header></page-header>
+<!-- MESSAGES LIST PAGE -->
+<div class="content-wrapper">
+<div id="messages">
+
+   
+        <div  class="messages under-header-shadow content-body-with-btns"><!-- messages -->
+            <div  class="msg-search very-light-blue light-blue-font"><input type="text"  ng-model="q" placeholder="filter friends..."  /></div>
+            
+            
+            
+            <div  class="message-list-item group-message-entry white" ng-repeat="message in messages | filter:q | orderBy:id" ng-click="groupMessageView('{{message.group.id}}', '{{message.group.title}}')">
+                <div  class="msg-user-pic"><img src="{{message.creator.img}}" width="60" height="60" /></div>
+
+                <div  class="msg-header">
+                    <div  class="msg-user-name dark-blue-font">{{message.creator[0].firstname}} {{message.creator[0].lastname}}</div>
+                    <div  class="msg-date light-blue-font">{{humanReadable(message.group.created_on)}}</div>
+                </div>
+                <div  class="msg dark-blue-font">
+                    <p>{{message.group.title}}
+                    </p>
+                </div>
+
+
+                <div  class="msg dark-blue-font">
+                    <p>{{message.chat.content}}
+                    </p>
+                </div>
+            </div><!-- message-list-item end -->
+
+            
+       	</div><!-- messages end -->
+
+       	<a ng-click="navigateTo('groupmessage')"><button class="button button-light-blu new-msg-btn">NEW CONVERSATION</button></a>
+
+  
+
+</div><!-- MESSAGES PAGE END -->
+</div>	
+<page-footer></page-footer>
+</div>

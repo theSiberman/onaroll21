@@ -1,0 +1,142 @@
+<div id="sp-nav">
+    <slide-menu></slide-menu>
+</div>
+<div id="sp-page">
+    <!-- GROUP MESSAGE PAGE -->
+    <page-header></page-header>
+    
+    <div class="content-wrapper" style="  opacity: 1; ">
+	    <div class="content-body-without-btns under-header-shadow">
+
+	    	<!-- LEFT HAND SIDE USER LIST -->
+			<div class="group-message-content-userlist">
+			<div class="team-members-list">TEAM MEMBERS</div>
+					
+
+
+					<div class="group-list-item med-blue ng-scope" ng-repeat="member in members" id="group-list-item-number-{{member[0].id}}" ng-click="addMemberToList('{{member[0].id}}', '{{member[0].firstname}} {{member[0].lastname}}');">
+		            <div class="group-pic">
+		                <img ng-src="{{member[0].picture}}" height="100%" src="{{member[0].picture}}">
+		            </div>
+		            <div class="team-name ng-binding"><b class="ng-binding">{{member[0].firstname}} {{member[0].lastname}}</b></div>
+		            
+		  			</div>
+
+		  			
+
+
+			</div>
+
+
+			<!-- END LEFT HAND SIDE USER LIST -->
+
+			<!-- RIGHT HAND SIDE CHAT CONTAINER -->
+
+	        <div class="group-message-content-chat-container">
+
+	        		<!-- GROUP TITLE INPUT  -->
+	        		<div class="group-message-content-chat-container-title"><input type="text" ng-model="title" placeholder="Title" class="group-message-input"/></div>
+
+
+	        		<!-- GROUP MEMBER LIST  -->
+
+	        		<div class="group-message-content-chat-container-members">
+						<div class="member-list">
+
+
+
+							<div class="member grey-blue"  ng-repeat="activemember in avtivemembers" id="group-list-member-{{activemember.uid}}">
+								<div class="member-name-tag-container">
+									<div class="member-name-tag">{{activemember.name}}</div>
+								</div>
+								<div class="remove-member" ng-click="removeMember('{{activemember.uid}}', '{{activemember.name}}');"></div>
+							</div>
+	        				
+	        				
+						</div>
+	        		</div>
+	        		<div class="num-of-members-container">
+						<div class="num-of-members">1</div>
+					</div>
+	        		<!-- GROUP MAIN CHAT CONTAINER  -->
+
+	        		<div class="group-message-content-chat-container-chatscreen" id="group-message-content-chat-container-chatscreen">
+
+						<div class="message-entry" ng-repeat="message in messages">
+
+							<div ng-show="message.type != 'message'" class="room-message creator-message grey-blue">{{message.content}}</div>
+							
+							<div ng-show="message.type == 'message'">
+
+			                <div class="post-user-pic">
+			                    <img ng-src="{{message.pic}}" height="100%" src="{{message.pic}}">
+			                </div>
+			                <div class="post-info">
+			                    <div class="post-user-name"><h2 class="ng-binding">{{message.fname}}</h2></div>
+			                    <div class="post-time"><h2 class="ng-binding">{{ humanReadable(message.created_on) }}</h2></div>
+			                </div>
+			                <div class="message-entry-content">
+			                <p>{{message.content}}
+			                </p>
+			                
+			                	<!-- img src="http://oar21.antwaite.com.au:8888/uploads/pix/posts/ff4eafb582b98b9de126aacf2b2b8af90880c51f/ff4eafb582b98b9de126aacf2b2b8af90880c51f.png"-->
+			                	
+			                </div>  
+
+			            </div>
+			                
+			            </div>
+						            
+	    				
+
+						
+						
+						
+						
+	        		</div>
+
+
+	        		<!-- GROUP MESSAGE INPUT  -->
+
+	        		<div class="group-message-content-chat-container-input">
+	        			<div class="write-comment-drop-shad"></div>
+	        				<textarea class="group-message-input under-header-shadow" ng-enter="sendMessage()" ng-model="commentnewtext"  placeholder="Type your message here"></textarea>
+	        		</div>
+
+	        		<!-- BUTTONS  -->
+
+	        		<div class="group-message-content-chat-container-buttons">
+
+        				<button class="group-chat-button button button-third-width fileUpload button-ora" >
+        				    <img class="media-icon" src="images/media-camera.png" alt="" />
+        				    <input type="file" onchange="angular.element(this).scope().file_changed(this)" class="status_file" data-file="post.status_file" upload-file accept="image/*" capture="camera" ng-hide="hideFileUpload=0" />
+        				</button>
+        				
+    				    <button type="submit" form="postForm" class="group-chat-button button-third-width button button-light-blu post-btn" value="Submit">ALERT: OFF
+    				    </button>
+        				
+        				<button type="button" ng-click="leaveChat();" class="group-chat-button button-third-width button button-light-blu post-btn" value="Submit">LEAVE CHAT
+        				</button>
+
+        				
+
+	        		</div>
+
+
+
+
+	        </div>
+
+
+	        <!-- END RIGHT HAND SIDE CHAT CONTAINER -->
+
+	       	<div style="clear:both;"></div>
+	       
+	       
+	        
+	    </div><!-- END group-message-content -->
+    </div><!-- END content-wrapper -->
+    
+    <page-footer></page-footer>
+</div>
+<div class="loading"></div>

@@ -1,0 +1,162 @@
+<!-- EDIT POST PAGE -->
+<div id="post-new" class="container card-panel">
+    <div class="post-header"><h1>Edit Post</h1></div>
+    <div class="post-form-wrap">
+        <form id="editForm" name="postForm" ng-submit="editPost(postForm)">
+            <div id="post-text" class="input-field">
+                <textarea class="materialize-textarea no-margin" name="status_text" ng-model="post.status" placeholder="How did you roll?"></textarea>
+            </div>
+            <div class="uploaded-images" style="display: none;">
+                <!-- *NOTE: dynamically scale background-size based on shortest side  -->
+                <div class="uploaded-image" >
+                    <div class="remove-upload theme center-align" ng-click="removePreviewImage();"><span class="white-text">X</span></div>
+                    <img class="uploaded-image-source" src=""/>
+                </div>
+            </div>
+            <div class="post-buttons">
+                <div id="type-select" class="input-field select-wrap">
+                    <span class="select-arrow-disabled"></span>
+                    <select disabled class="browser-default no-padding no-margin" ng-model="post.type" ng-change="toggleDisplayMission()">
+                        <option value disabled selected>Post Type</option>
+                        <option value="mission" >Mission</option>
+                        <option value="general" >General</option>
+                        <option value="note" >Note</option>
+                    </select>
+                </div>
+                <div class="show-mission" ng-show="post.type == 'mission'">
+                    <input type="checkbox" name="show-mission" id="show-mission" class="filled-in" ng-model="post.display_mission" disabled="disabled"/>
+                    <label class="left-align" for="show-mission">Display Mission</label>
+                </div>
+                <div class="btn-group right-align">
+                    <div id="upload-btn">
+                        <button type="button" class="btn grey lighten-1">
+                            <i class="fa fa-camera"></i>
+                        </button>
+                        <input type="file" onchange="angular.element(this).scope().file_changed(this)" class="  fileUpload  status_file" data-file="post.status_file" upload-file ng-hide="hideFileUpload=0" />
+                    </div>
+                    <button type="submit" class="btn green">SAVE</button>
+                </div>
+                <div class="cancel-btn theme-text hide"><a href="/#/wall">Cancel</a></div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!--<div id="new-post">-->
+
+
+    <!--&lt;!&ndash; HEADER &ndash;&gt;-->
+
+    <!--<div class="header post-as-header">-->
+    <!--<div class="notification-type grey-blue"><h3>Post As :</h3></div>-->
+
+    <!--<div class="post-as-notification-msg dark-blue">-->
+
+            <!--<div class="disable-head dark-blue"></div>-->
+
+            <!---->
+            <!--<div class="post-as-ckbox-container">-->
+                <!--<input type="checkbox" name="checkbox2" id="checkbox2" class="css-checkbox" ng-model="post.mission_completed" ng-click="printObject(); switchComplete()" />-->
+                <!--&lt;!&ndash; <input type="checkbox" name="checkbox2a" id="checkbox2a" class="css-checkbox" checked="checked"/> &ndash;&gt;-->
+                <!--<label for="checkbox2" class="css-label checkbox-yellow"></label>-->
+                <!--<div class="ckbox-description"><p>Mission<br>Completed</p></div>-->
+            <!--</div>-->
+            <!--<div class="post-as-ckbox-container border-right">-->
+                <!--<input type="checkbox" name="checkbox5" id="checkbox5" ng-disabled="post.general == true" class="css-checkbox" ng-init="post.display_mission = true" ng-model="post.display_mission" ng-click="printObject(); " />-->
+                <!--<label for="checkbox5" class="css-label checkbox-yellow"></label>-->
+                <!--<div class="ckbox-description"><p>Display<br>Mission</p></div>-->
+            <!--</div>-->
+            <!---->
+            <!--<div class="post-as-ckbox-container border-right">-->
+                <!--<input type="checkbox" name="checkbox3" id="checkbox3" class="css-checkbox" ng-model="post.general" ng-click="printObject(); switchGeneral()" />-->
+                <!--&lt;!&ndash; <input type="checkbox" name="checkbox3a" id="checkbox3a" class="css-checkbox" checked="checked"/> &ndash;&gt;-->
+                <!--<label for="checkbox3" class="css-label checkbox-yellow"></label>-->
+                <!--<div class="ckbox-description"><p>General<br>Post</p></div>-->
+            <!--</div>-->
+            <!--&lt;!&ndash;div class="post-as-ckbox-container">-->
+                <!--<input type="checkbox" name="checkbox4" id="checkbox4" class="css-checkbox" ng-model="post.all_teams" ng-click="printObject(); switchAllteams()" />-->
+                <!--<label for="checkbox4" class="css-label"></label>-->
+                <!--<div class="ckbox-description"><p>All Related<br>Teams</p></div>-->
+            <!--</div&ndash;&gt;-->
+            <!--<div class="post-as-ckbox-container">-->
+                <!--<input type="checkbox" name="checkbox1" id="checkbox1" class="css-checkbox" ng-model="post.private"  ng-click="printObject(); switchPrivate()" />-->
+                <!--<label for="checkbox1" class="css-label checkbox-yellow"></label>-->
+                <!--<div class="ckbox-description"><p>Private<br>Journal Only</p></div>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div class="highlight-bar cream"></div>-->
+    <!--</div>-->
+    <!--<div class="header-drop-shad"></div> -->
+    <!--&lt;!&ndash; HEADER END &ndash;&gt;-->
+
+
+
+
+    <!--<div class="content-wrapper">-->
+    <!--<form id="postForm" name="postForm" ng-submit="editPost(postForm)">-->
+        <!--<div class="post-new under-header-shadow">-->
+            <!--<p>-->
+                <!--<textarea name="status_text" ng-model="post.status" class="status_text"  placeholder="How did you roll?">-->
+                <!--</textarea>-->
+                <!---->
+                <!--<div class="uploaded-images" style="display: none;">-->
+                	<!--&lt;!&ndash; *NOTE: dynamically scale background-size based on shortest side  &ndash;&gt;-->
+                	<!--<div class="uploaded-image" >-->
+                        <!--<div class="remove-upload grey-blue" ng-click="removePreviewImage();"></div>-->
+                        <!--<img class="uploaded-image-source" src=""/>-->
+                		<!---->
+                	<!--</div>-->
+                	<!--&lt;!&ndash;<div class="uploaded-image" style="background-image: url(../uploads/pix/user/jmundie.jpg)">-->
+                		<!--<div class="remove-upload"></div>-->
+                	<!--</div>-->
+                	<!--<div class="uploaded-image" style="background-image: url(../uploads/pix/user/belle.piec.jpg)">-->
+                		<!--<div class="remove-upload"></div>-->
+                	<!--</div>-->
+                	<!--<div class="uploaded-image" style="background-image: url(../uploads/pix/user/melvin.satgunam.jpg)">-->
+                		<!--<div class="remove-upload"></div>-->
+                	<!--</div>-->
+                	<!--<div class="uploaded-image" style="background-image: url(../uploads/pix/user/Martini.jpg)">-->
+                		<!--<div class="remove-upload"></div>-->
+                	<!--</div>-->
+                <!--&ndash;&gt;-->
+                <!--</div>&lt;!&ndash; uploaded-images end &ndash;&gt;-->
+                <!---->
+                <!---->
+                <!---->
+                <!--&lt;!&ndash;img ng-src="{{imageSrc}}" /&ndash;&gt;-->
+            <!--</p>-->
+        <!--</div>-->
+        <!--<div id="postNewButtons">-->
+
+            <!--<div class="button-half-width button button-ora button-upload">-->
+                <!--&lt;!&ndash;<button class="button  fileUpload button-ora">&ndash;&gt;-->
+                <!--<img class="media-icon" src="images/media-camera.png" alt="" />-->
+                <!--&lt;!&ndash;<input type="file"  onchange="angular.element(this).scope().file_changed(this)" class="status_file" data-file="post.status_file" upload-file accept="image/*" ng-hide="hideFileUpload=0" />&ndash;&gt;-->
+                <!--<input type="file"  onchange="angular.element(this).scope().file_changed(this)" class="  fileUpload  status_file" data-file="post.status_file" upload-file ng-hide="hideFileUpload=0" />-->
+                <!--&lt;!&ndash;</button>&ndash;&gt;-->
+            <!--</div>-->
+            <!---->
+            <!---->
+            <!--<div class="button-half-width">-->
+                <!--<button type="submit" form="postForm" class="button button-light-blu post-btn" value="Submit">SUBMIT CHANGE</button>-->
+            <!--</div>-->
+
+        <!--</div>-->
+    <!--</form>-->
+    <!---->
+    <!---->
+    <!---->
+    <!---->
+<!--</div>-->
+<!--</div>-->
+
+
+
+
+
+
+
+
+
+
+

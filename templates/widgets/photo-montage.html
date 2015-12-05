@@ -1,0 +1,9 @@
+<div class="photo-container">
+    <div id="freewall" class="free-wall">
+        <p class="grey-text" ng-show="photos.length == 0" style="text-align: center;">You have no uploaded photos at the moment</p>
+        <div ng-repeat="photo in photos">
+            <img src="{{photo}}">
+        </div>
+    </div>
+</div>
+

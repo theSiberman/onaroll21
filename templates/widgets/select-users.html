@@ -1,0 +1,21 @@
+<div id ="messages">
+    <div class="center-align">
+        <button id="select-users-btn" class="btn theme" ng-click="openMessage(users)">CHAT NOW!</button>
+    </div>
+    <p class="red-text center-align">{{checkMessage}}</p>
+    <div class="select-list-wrap">
+        <ul class="collection centered-name select-list">
+            <li class="collection-item message-item avatar" ng-repeat="user in users" ng-if="user[0].id != currentUser.id">
+                <input type="checkbox" ng-model="user.checked" ng-checked="user.checked" id="select-user-{{user[0].id}}" class="filled-in" ng-click="toggleButton()"/>
+                <label for="select-user-{{user[0].id}}">
+                    <div class="avatar">
+                        <div class="avatar-wrap">
+                            <img src="{{user[0].picture}}" />
+                        </div>
+                    </div>
+                    <span class="title theme-text">{{user[0].firstname}} {{user[0].lastname}}</span>
+                </label>
+            </li>
+        </ul>
+    </div>
+</div>

@@ -1,0 +1,2769 @@
+<?php
+
+/**
+ * API controller to be used by front end single page app
+ */
+class APIController extends \BaseController {
+    /**
+     * Fetch all the posts for group along with the specific user details
+     * @return type
+     */
+    //TODO: Check for all the requirements against the output of this function
+    public function getGroupPosts()
+    {
+        $input = Input::all();
+        $groupid = $input['groupid'];
+        $authuser = Auth::user();
+        if (Input::has('limitfrom')) {
+            $skip = Input::get('limitfrom');
+        } else {
+            $skip = 0;
+        }
+        $group = Group::find($groupid);
+        if (is_null($group)) {
+            return Response::json(array(
+                'success' => false,
+                'errors' => 'Group not found'
+            ), 400); // 400 being the HTTP code for an invalid request.
+        }
+        //Now fetch all the posts of that group
+        $posts = Post::orderBy('id', 'DESC')->where('group_id', $groupid)->take(5)->skip($skip)->get();
+
+        foreach ($posts as $post) {
+            $post->status = $post->status;
+            $post->status_text = $post->filterStatus();
+            $post->image = ($post->statustype = 'image') ? $post->displayMediaApi() : '';
+            $post->screenhandle = User::find($post->user_id)->screenhandle;
+			$post->firstname = User::find($post->user_id)->firstname;
+			$post->lastname = User::find($post->user_id)->lastname;
+            $post->comments = $post->getAPIComments();
+            $user = User::find($post->user_id);
+            $post->userImage = $user->APIGetPictureSrc();
+            if ($authuser->hasLike($post->id)) {
+                $post->like = true;
+            } else {
+                $post->like = false;
+            }
+        }
+
+        return $posts->toJson();
+    }
+
+
+
+
+
+
+
+
+    /**
+     * Fetch all the private posts for group along with the specific user details
+     * @return type
+     */
+    //TODO: Check for all the requirements against the output of this function
+    public function getPrivatePosts()
+    {
+        $input = Input::all();
+        $groupid = $input['groupid'];
+        $authuser = Auth::user();
+        if (Input::has('limitfrom')) {
+            $skip = Input::get('limitfrom');
+        } else {
+            $skip = 0;
+        }
+        $group = Group::find($groupid);
+        if (is_null($group)) {
+            return Response::json(array(
+                'success' => false,
+                'errors' => 'Group not found'
+            ), 400); // 400 being the HTTP code for an invalid request.
+        }
+        //Now fetch all the posts of that group
+        $posts = Post::orderBy('id', 'DESC')->where('group_id', $groupid)->where('private', '1')->where('user_id', $authuser['id'])->take(5)->skip($skip)->get();
+
+        foreach ($posts as $post) {
+            $post->status = $post->status;
+            $post->status_text = $post->filterStatus();
+            $post->image = ($post->statustype = 'image') ? $post->displayMediaApi() : '';
+            $post->screenhandle = User::find($post->user_id)->screenhandle;
+            $post->firstname = User::find($post->user_id)->firstname;
+            $post->lastname = User::find($post->user_id)->lastname;
+            $post->comments = $post->getAPIComments();
+            $user = User::find($post->user_id);
+            $post->userImage = $user->APIGetPictureSrc();
+            if ($authuser->hasLike($post->id)) {
+                $post->like = true;
+            } else {
+                $post->like = false;
+            }
+        }
+
+        return $posts->toJson();
+    }
+
+
+
+
+
+
+	/**
+     * @author : John Le
+	 * Fetch a single posy by specific ID along with the specific user details
+     * @return json object
+     */
+    //TODO: Check for all the requirements against the output of this function
+	public function getGroupPostByID(){
+		
+		$input = Input::all();
+        $groupid = $input['groupid'];
+		$postid = $input['postid'];
+        $authuser = Auth::user();
+        if (Input::has('limitfrom')) {
+            $skip = Input::get('limitfrom');
+        } else {
+            $skip = 0;
+        }
+        $group = Group::find($groupid);
+        if (is_null($group)) {
+            return Response::json(array(
+                'success' => false,
+                'errors' => 'Group not found'
+            ), 400); // 400 being the HTTP code for an invalid request.
+        }
+        //Now fetch all the posts of that group
+        $posts = Post::orderBy('id', 'DESC')->where('id', $postid)->take(1)->skip($skip)->get();
+		
+		
+        foreach ($posts as $post) {
+            $post->status = $post->status;
+            $post->status_text = $post->filterStatus();
+            $post->image = ($post->statustype = 'image') ? $post->displayMediaApi() : '';
+            $post->screenhandle = User::find($post->user_id)->screenhandle;
+            $post->comments = $post->getAPIComments();
+            $user = User::find($post->user_id);
+            $post->userImage = $user->APIGetPictureSrc();
+            if ($authuser->hasLike($post->id)) {
+                $post->like = true;
+            } else {
+                $post->like = false;
+            }
+        }
+		
+		
+        return $posts->toJson();
+		
+	}
+
+    /**
+     * This function returns the list of all the groups that the logged in user
+     * has access to
+     * @return JSON groupList
+     */
+    public function getGroupList() {
+        $user = Auth::user();
+
+        if ($user->hasRole('admin')) {
+            $groups = Group::all();
+        } else {
+            //$groups = $user->getGroups(); //Group::all();
+            //print_r($groups);
+            $groups = Group::where('keycode','=', $user->keycode)->get();
+
+             //$groups = $groups[0];
+
+             //print_r($user->keycode);   
+
+        }
+        foreach ($groups as $group) {
+            $group->members = $group->getUserCount();
+            $group->thumbnailSrc = $group->APIGetThumbnailSrc();
+            $group->preSurveyCompleted=$user->preSurveyCompleted($group->id);
+            $group->postSurveyCompleted=$user->postSurveyCompleted($group->id);
+        }
+
+        //TODO: Get the user progress in group
+
+        return $groups->toJson();
+    }
+	
+	
+	
+	/**
+	 * 
+	 * @Author : John Le @ En Masse
+     * This function returns the list of all users that belong to specific group by group ID
+     * @return JSON userList
+     */
+    public function getUserListByGroupID() {
+        $user = Auth::user();
+		$input = Input::all();
+		
+		
+		$groupusers = GroupUser::where('group_id', '=', $input['id'])->get();
+		
+		$users = array();
+		$i = 0;
+		
+		foreach($groupusers as $groupuser){
+			
+			$users[$i] = DB::select('select * from users where id = ?', array($groupuser->user_id));
+			
+			$users[$i][0]->picture = base64_decode($users[$i][0]->picture);
+			
+			$i++;
+			
+		}
+		
+        return json_encode($users);
+        
+    }
+
+    /**
+     * This returns the words for word cloud
+     * @return type
+     */
+    public function getUserWords() {
+        $user = Auth::user();
+        $words = $user->getWords();
+        return Response::json($words);
+    }
+	
+	 /**
+     * Check the pending task
+     * @return pending task
+	 * 
+     */
+	
+	
+	public function pendingTask(){
+		
+		$return = "false";
+		
+		$groupid = Input::json('groupid');
+        $user = Auth::user();
+        $userid = $user->id;
+		
+		$group = Group::find($groupid);
+        $outcome = Outcome::find($group->outcome);
+		
+		
+        $availArray = array_fetch($outcome->tasks->toArray(), 'id');
+        $currentDay = round((time() - $group->timestart) / 86400, 0);
+
+        $pendingTask = DB::table('user_tasks')
+                ->where('user_id', $userid)
+                ->where('group_id', $group->id)
+                ->where('complete', 0)
+                ->first();
+				
+				
+		$pendingTaskDetails = DB::table('tasks')
+                ->where('id', $pendingTask->task_id)
+                ->first();		
+				
+				
+				
+		 $returnObject = new stdClass();		
+				
+		if ($pendingTask){
+            // get the task time
+
+            $pdTaskTime = strtotime($pendingTaskDetails->created_at);
+
+            // get the current time
+            $currentTime = time();
+
+            // calculate the time, if there is an inactive task
+            $timetmp = false;
+
+            if ($currentTime - $pdTaskTime > 2880){
+                    //print_r($currentTime);
+                   $timetmp = true; 
+            }
+			
+			$returnObject->pendingTask = 1;
+			$returnObject->taskid = $pendingTaskDetails->id;
+			$returnObject->title = makeClickableLinks($pendingTaskDetails->description);
+			$returnObject->didyouknow = makeClickableLinks($pendingTaskDetails->didyouknow);
+			$returnObject->reference = makeClickableLinks($pendingTaskDetails->reference);
+            $returnObject->date = $timetmp;
+		    $returnObject->taskid = $pendingTaskDetails->id;
+			
+			
+			//$return = $pendingTaskDetails;
+			
+		}		
+				
+		//print_r($pendingTaskDetails);
+		return Response::json($returnObject);
+		
+		
+	}
+	
+	/**
+     * Return the percentage of the progressbar by number
+     * @return number
+	 * 
+     */
+	
+	public function getProgress(){
+		
+		
+		// get all the inputs, variable init
+		
+		$groupid = Input::json('groupid');
+        $user = Auth::user();
+        $userid = $user->id;
+		
+		$return = 0;
+		
+		// get the total tasks
+		
+		$group = Group::find($groupid);
+        $outcome = Outcome::find($group->outcome);
+		
+		
+        $availArray = array_fetch($outcome->tasks->toArray(), 'id');
+		
+		//print_r();
+		
+		$countAvailArray = count($availArray);
+		
+		// get the completed tasks
+		
+		$completedTasks = DB::table('user_tasks')
+                ->where('user_id', $userid)
+                ->where('group_id', $groupid)
+                ->where('complete', 1)
+                ->get();
+				
+		//print_r(count($completedTasks));
+		
+		
+		$countCompletedTasksArray = count($completedTasks);
+		// calculating the percentage
+		
+		$return =  ($countCompletedTasksArray / $countAvailArray) * 100;
+		
+		
+		
+		return round($return, 0);
+		
+		
+	}
+	
+	
+	
+
+    /**
+     * Fetch the current task for this user and group combination, will return
+     * the pending task if the user has any pending task
+     *
+     * @param json $groupid id of the group that the user is currently accessing
+     * @param json $userid id of the currently logged in user
+     * @return json $returnObject will return the task details or the error message
+     */
+    public function getNewTask() {
+    	
+    	
+        $groupid = Input::json('groupid');
+        $user = Auth::user();
+        $userid = $user->id;
+
+        $returnObject = new stdClass();
+        $returnObject->status = 'error';
+        $returnObject->message = array();
+        if (empty($userid)) {
+            $statusMessage[] = 'Userid can not be empty';
+        }
+        //TODO: check if user exists
+        //TODO: check if group exists
+        if (empty($groupid)) {
+            $statusMessage[] = 'Groupid can not be empty';
+        }
+
+        $group = Group::find($groupid);
+        $outcome = Outcome::find($group->outcome);
+		
+		
+        $availArray = array_fetch($outcome->tasks->toArray(), 'id');
+        $currentDay = round((time() - $group->timestart) / 86400, 0);
+
+        $pendingTask = DB::table('user_tasks')
+                ->where('user_id', $userid)
+                ->where('group_id', $group->id)
+                ->where('complete', 0)
+                ->first();
+				
+		// check if there is a pending task
+				
+		if ($pendingTask) {
+            $task = Task::find($pendingTask->task_id);
+
+            $returnObject->pendingTask = 1;
+            $returnObject->taskno=  array_search($pendingTask->task_id,$availArray);
+        }else {
+
+            // return the random number but different than the last number
+            
+            $lastMission[] = DB::table('final_task')->where('outcome_id', $group->outcome)->pluck('task_id');
+			
+			$tmpUserTaskArray[] = DB::table('user_tasks')->where('outcome_id', $group->outcome)->where('user_id', $userid)->lists('task_id');
+			
+			$doneArray = $tmpUserTaskArray[0];
+			
+			
+			
+			$array = array_diff($availArray, $lastMission);
+			
+			//print_r($availArray);
+			
+			$array = array_diff($array, $doneArray);
+			
+			
+			
+			$array = array_values($array);
+			
+			$numberOfDay = count($availArray);
+			
+			//print_r($numberOfDay);
+			
+			//print_r($array);
+			
+			if (empty($array)) {
+				
+				//echo "sss";
+				
+                //if ($currentDay == count($tmpUserTaskArray) + 1) {
+                	
+                    //$rand = array_rand($array);
+				    $returnObject->taskno = count($availArray);
+	            	$task = Task::find($lastMission); 
+					
+					//print_r($task[0]->description);
+					
+					$returnObject->title = strip_tags(makeClickableLinks($task[0]->description));
+			        $returnObject->didyouknow = strip_tags(makeClickableLinks($task[0]->didyouknow));
+			        $returnObject->reference = strip_tags(makeClickableLinks($task[0]->reference));
+					$returnObject->taskid = $task[0]->id;	
+					
+                //} 
+				
+				//echo $currentDay;
+            } else{
+            	
+				
+            	
+				$rand = array_rand($array);
+			    $returnObject->taskno = $rand + 1;
+            	$task = Task::find($array[$rand]); 
+				$returnObject->title = strip_tags(makeClickableLinks($task->description));
+		        $returnObject->didyouknow = strip_tags(makeClickableLinks($task->didyouknow));
+		        $returnObject->reference = strip_tags(makeClickableLinks($task->reference));
+				$returnObject->taskid = $task->id;	
+				
+            }
+			
+			//print_r($array);
+			
+			
+            $returnObject->pendingTask = 0;
+            
+			//print_r($rand);
+        }	
+		
+		//print_r($returnObject);	
+		
+        $returnObject->status = "success";
+        	
+				
+		/*
+		 * 
+		 		
+        if ($pendingTask) {
+            $task = Task::find($pendingTask->task_id);
+
+            $returnObject->pendingTask = 1;
+            $returnObject->taskno=  array_search($pendingTask->task_id,$availArray);
+        } else {
+
+            $doneArray[] = $outcome->getFinalTask();
+
+            $array = array_diff($availArray, $doneArray);
+
+            $array = array_values($array);
+
+            if (empty($array)) {
+                if ($currentDay >= 21) {
+                    $array[20] = $outcome->getFinalTask();
+                } else {
+                    $array = $availArray;
+                }
+            } elseif ($currentDay >= 21) {
+                $array = array();
+                $array[20] = $outcome->getFinalTask();
+            }
+
+            $rand = array_rand($array);
+            $task = Task::find($array[$rand]); //$user->getNextTask();
+            $returnObject->pendingTask = 0;
+            $returnObject->taskno = $rand + 1;
+        }
+
+        $returnObject->title = makeClickableLinks($task->description);
+        $returnObject->didyouknow = makeClickableLinks($task->didyouknow);
+        $returnObject->reference = makeClickableLinks($task->reference);
+        $returnObject->status = "success";
+        $returnObject->taskid = $task->id;
+        //Return the JSON object with the info
+        return Response::json($returnObject);
+		 * */
+		 return Response::json($returnObject);
+    }
+
+    /**
+     * Accepts the mission for a user
+     * @param int userid JSON
+     * @param int groupid JSON
+     * @param int taskid JSON
+     * @return JSON $returnObject JSON object
+     */
+    public function acceptMission() {
+        $user = User::find(Input::get('userid'));
+        $group = Group::find(Input::get('groupid'));
+        $outcome = Outcome::find($group->outcome);
+        $task = Task::find(Input::get('taskid'));
+
+        // TODO: validate the input
+        // TODO: Check if the record already exists in the DB
+
+        DB::table('user_tasks')->insert(
+                array(
+                    'user_id' => $user->id,
+                    'group_id' => $group->id,
+                    'outcome_id' => $outcome->id,
+                    'task_id' => $task->id,
+                    'created_at' => new DateTime,
+                    'updated_at' => new DateTime
+                )
+        );
+
+        $returnObject = new stdClass();
+        $returnObject->status = 'ok';
+        $returnObject->message = 'Task accepted!';
+
+        return Response::json($returnObject);
+    }
+
+    /**
+     * This function will return the user progress
+     * @param int userid
+     * @param int groupid
+     * @return json data this should contain all the group related data for the usre
+     */
+    public function trackUserProgress() {
+        $input = (array) Input::json();
+    }
+
+    /**
+     * This function will toggle like for the user and a post
+     * @param int userid
+     * @param int postid
+     * @param int type
+     * @return json data status object containing all the parameters
+     */
+    public function updateLike() {
+        $input = Input::all();
+        $user = Auth::user();
+
+        if ($input['type'] == 'unlike') {
+            $post = Post::find($input['postid']);
+            $like = DB::table('likes')->where('post_id', $input['postid'])->where('user_id', $user->id)->delete();
+
+
+        } else {
+            $post = Post::find($input['postid']);
+            $like = new Like();
+            $like->user_id = $user->id;
+            $like->post_id = $post->id;
+            $like->save();
+			
+			// John part
+
+
+            if (trim($user->id) != trim($post->user_id)){
+			     $this->addNotification($post->user_id, 'newlike', $input['postid'], "likes your post" );
+             }
+			// end john part
+        }
+        $returnReponse=  new stdClass();
+        $returnReponse->status='OK';
+        $returnReponse->message='Like updated';
+        return Response::json($returnReponse);
+    }
+
+    /**
+     * This function will add/update user feedback
+     * @param int userid
+     * @param int postid
+     * @param int feedback
+     * @return json data json object
+     */
+    public function updateTaskScore() {
+        $input=Input::all();
+        $user=Auth::user();
+        $taskid=$input['taskid'];
+        $score=$input['score'];
+
+        $date=new \DateTime;
+
+        DB::insert('insert into task_score (user_id, task_id, score, created_at, updated_at) values (?, ?, ?, ?, ?)', array($user->id, $taskid, $score, $date, $date));
+
+        $returnObject=new stdClass();
+        $returnObject->status='OK';
+        $returnObject->message='Feedback updated';
+
+        return Response::json($returnObject);
+    }
+
+    /**
+     *
+     */
+    public function updateFeedback() {
+        $input=Input::all();
+        $user=Auth::user();
+        $feedback=$input['feedback'];
+
+        $date=new \DateTime;
+
+        DB::insert('insert into feedback (user_id, feedback, created_at, updated_at) values (?, ?, ?, ?)', array($user->id, $feedback, $date, $date));
+
+        $returnObject=new stdClass();
+        $returnObject->status='OK';
+        $returnObject->message='Feedback updated';
+
+        return Response::json($returnObject);
+    }
+
+    /**
+     * TODO: convert this to AJAX and usable with angular
+     */
+    public function addComment() {
+        $input = Input::all();
+
+        $userAuth=Auth::user();
+
+        $user = User::find($input['user_id']);
+
+        $post = Post::find($input['post_id']);
+        $comment = new Comment();
+        $comment->user_id = $user->id;
+        $comment->post_id = $post->id;
+        $comment->comment = $input['comment'];
+
+        $comment->save();
+		
+		//$this->addNotification(0, 'newcomment', $input['post_id'], $input['comment'] );
+		//print_r($input['user_id']);
+		//print_r($userAuth->id);
+
+        // add a new notification
+        if (trim($userAuth->id) != trim($post->user_id)){
+
+            $this->addNotification($post->user_id, 'newcomment', $input['post_id'], "has commented on your post" );
+        }
+        // end add notification
+        $returnResponse=new stdClass();
+        $returnResponse->status='OK';
+        $returnResponse->message='Comment udpated successfully';
+        return Response::json($returnResponse);
+    }
+
+    /**
+     * TODO: this is the standard non-angular method and needs to be converted
+     * to AJAX style
+     * @param type $param
+     */
+    public function deleteComment($param) {
+
+        $input = (array) Input::json();
+        $comment = Comment::find($input['commentid']);
+
+        $returnObject = new stdClass();
+
+        if ($comment->delete()) {
+            $returnObject->status = 'ok';
+            $returnObject->message = 'Comment deleted successfully';
+        } else {
+            $returnObject->status = 'error';
+            $returnObject->message = 'An error occurred';
+        }
+
+        return Response::json($returnObject);
+    }
+
+    /**
+     * Adds a post to the database.
+     * @param int userid
+     * @param int groupid
+     * @param int taskid
+     * @return JSON $returnObject
+     */
+    public function addPost() {
+        // This function needs to store the information in DB
+        $newPost = json_decode(Input::get('post'));   //Get the post from input
+        $userid = $newPost->userid;
+        $groupid = $newPost->groupid;
+        $taskid = $newPost->taskid;
+        $user = User::find($userid);
+        $group = Group::find($groupid);
+        $task = Task::find($taskid);
+
+
+        if (!$taskid){
+
+                $taskid = 0;
+                $task = 0;
+
+        }
+
+        if (is_null($user)) {
+            return Response::json(array(
+                        'success' => false,
+                        'errors' => 'User not found'
+                            ), 400); // 400 being the HTTP code for an invalid request.
+        }
+        if (is_null($group)) {
+            return Response::json(array(
+                        'success' => false,
+                        'errors' => 'Group not found'
+                            ), 400); // 400 being the HTTP code for an invalid request.
+        }
+        if (is_null($task)) {
+            return Response::json(array(
+                        'success' => false,
+                        'errors' => 'Task not found'
+                            ), 400); // 400 being the HTTP code for an invalid request.
+        }
+
+        $post = new Post();
+        $post->user_id = $userid;
+        $post->group_id = $groupid;
+        $post->task_id = $taskid;
+        $post->statustype = 'text';
+        if($newPost->private) {
+            $post->private=true;
+        } else {
+            $post->private=false;
+        }
+
+
+        if (Input::hasFile('file')) {
+            $status = array();
+            $status['text'] = $newPost->status_text;
+            $file = Input::file('file');
+            $filecreationname = sha1($user->id . $group->id . $task->id . time() . $file->getClientOriginalName());
+            $pixpath = '/uploads/pix/posts/' . $filecreationname . '/';
+            $destinationPath = public_path() . $pixpath;
+            $filename = $filecreationname . '.' . $file->getClientOriginalExtension();
+
+            File::makeDirectory($destinationPath);
+
+            $video_formats = array('mp4', 'mov', 'avi', 'wav', 'flv', 'wmv');
+            if (in_array($file->getClientOriginalExtension(), $video_formats)) {
+                $file->move($destinationPath, $filename);
+            } else {
+                $img = Image::make($file->getRealPath());
+                if (preg_match('/.jpg$/i', $filename) || preg_match('/.jpeg$/i', $filename)) {
+                    // Before resizing correct image orientation
+                    $orientation = @$img->exif('Orientation');
+
+                    if (!empty($orientation)) {
+                        switch ($orientation) {
+                            case 8:
+                                $img->rotate(90);
+                                break;
+                            case 3:
+                                $img->rotate(180);
+                                break;
+                            case 6:
+                                $img->rotate(-90);
+                                break;
+                        }
+                    }
+                }
+                //$img->resize($thumb_w, $thumb_h, false);
+                $img->save(public_path() . $pixpath . $filename, 60);
+                //////////////END - IMAGE OPT/////////////
+            }
+            $status['image'] = base64_encode($pixpath . $filename);
+            $post->statustype = 'image';
+
+            $post->status = serialize($status);
+        } else {
+            $post->status = $newPost->status_text;
+        }
+
+        $post->save();
+        //Close the task here
+        if ($newPost->mission_completed) {
+            $user->completeTask($group->id, $task->id);
+        }
+
+        //TODO: make the post private if the user selected private
+        $returnObject = new stdClass();
+        $returnObject->status = 'OK';
+        $returnObject->message = 'Post added successfully';
+        $returnObject->postid = $post->id;
+        return Response::json($returnObject);
+    }
+
+    /**
+     * Deletes the post with the supllied postid
+     * @return json $returnObject object containing status and message
+     */
+    public function deletePost() {
+        $inputJson = Input::json();
+        $input = (array) $inputJson;
+
+        $post = Post::find($input['postid']);
+        $post->delete();
+
+        $returnObject = new stdClass();
+        $returnObject->status = 'ok';
+        $returnObject->message('Post deleted successfully');
+
+        return Response::json($returnObject);
+    }
+
+    /**
+     * To be implemented
+     * @param type $param
+     * @return type
+     */
+    public function sendMessage($param) {
+        $returnObject = new stdClass();
+        $returnObject->success = true;
+        $returnObject->message = 'Post deleted successfully';
+
+        return Response::json($returnObject);
+    }
+
+    /**
+     * TODO: To be implemented
+     * @param type $param
+     */
+    public function markMessageRead($param) {
+        $returnObject = new stdClass();
+        $returnObject->status = 'ok';
+        $returnObject->message = 'Post deleted successfully';
+
+        return Response::json($returnObject);
+    }
+
+    /**
+     * Returns all the messages of a user
+     * @param int userid
+     * @return JSON $messages (object)
+     */
+    public function fetchMessages() {
+        $inputJson = Input::json();
+        $input = (array) $inputJson;
+
+        //We need to validate the input first
+        $rules = array(
+            'userid' => ['required']
+        );
+
+        $errorMessages = array(
+            'userid.required' => 'userid can not be empty'
+        );
+
+        $validator = Validator::make($input, $rules, $errorMessages);
+
+
+        //Exit early if the validator fails
+        if ($validator->fails()) {
+            return Response::json(array(
+                        'success' => false,
+                        'errors' => $validator->getMessageBag()->toArray()
+                            ), 400); // 400 being the HTTP code for an invalid request.
+        }
+
+        $messages = Message::all();
+        return Response::json($messages);
+    }
+
+    /**
+     * This function accepts the groupid and survey type and will return the
+     * survey json
+     * */
+    public function getSurvey() {
+        $inputJson = Input::json();
+        $groupid = $inputJson->get('groupid');
+        $surveyType = $inputJson->get('type');
+        $group = Group::find($groupid);
+        if (is_null($group)) {
+            return Response::json(array(
+                        'success' => false,
+                        'errors' => 'Invalid group id. Please check the groupid and send the request again'
+                            ), 400); // 400 being the HTTP code for an invalid request.
+        }
+        $survey = Survey::find($group->survey);
+        if (!is_null($survey)) {
+            $data = unserialize($survey->data);
+            $fields = json_decode($data[0])->fields;
+        }
+    }
+
+    /**
+     * This should return the pending task for user
+     * @param type $param
+     */
+    public function getPendingTask() {
+        $user = Auth::user();
+    }
+
+    public function getUserImages() {
+        $user = Auth::user();
+        $groups = $user->getGroups();
+        $images=array();
+        foreach($groups as $group) {
+            $posts = Post::orderBy('id', 'DESC')->where('group_id', $group->id)->get();
+            foreach ($posts as $post) {
+                if($post->statustype=='image') {
+                    if($img=$post->displayAPIMontage()) {
+                        $images[]=$img;
+                    }
+                }
+            }
+        }
+        return Response::json($images);
+    }
+
+    /**
+     * Returns the wellbeing data for the days spent by the user
+     * @return mixed
+     */
+    public function getWellbeingTracks()
+    {
+        $groupid = Input::get('groupid');
+        $user = Auth::user();
+        $group = Group::find($groupid);
+
+        if (is_null($group)) {
+            return Response::json(array(
+                'success' => false,
+                'errors' => 'Invalid groupid supplied'
+            ), 400); // 400 being the HTTP code for an invalid request.
+        }
+        //Get the wellbeing stats
+//        $wellbeing = DB::table('wellbeing_tracks')
+//            ->select('group_id', DB::raw('CEIL(AVG(mood)) as mood'), DB::raw('DATE(created_at) as date'))
+//            ->where('user_id', $user->id)
+//            ->where('group_id', $group->id)
+//            ->groupBy('date')
+//            ->get();
+
+        $wellbeing = DB::table('wellbeing_tracks')
+            ->select('group_id','mood',DB::raw('DATE(created_at) as date'))
+            ->where('user_id', $user->id)
+            ->get();
+
+
+        foreach ($wellbeing as $wellbeingTrack) {
+            $wellbeingTrack->day = (strtotime($wellbeingTrack->date) - $group->timestart) / 86400;
+            if (floor($wellbeingTrack->day <= 0))
+                $wellbeingTrack->day = 1;
+            else
+                $wellbeingTrack->day = floor($wellbeingTrack->day) + 1;
+        }
+
+        return Response::json($wellbeing);
+    }
+
+    //Save survey
+    /**
+     * Save the survey response
+     * @return type
+     */
+    public function saveSurveyResponse() {
+        $input=Input::all();
+        $inputSurvey=$input['survey'];
+
+        $survey=Survey::find($inputSurvey['surveyid']);
+        $group=Group::find($inputSurvey['group']);
+        $user=Auth::user();
+
+        $response = New SurveyResponse();
+        $response->user_id = $user->id;
+        $response->group_id = $inputSurvey['group'];
+        $response->survey_id = $inputSurvey['surveyid'];
+        $response->type = $inputSurvey['type'];
+        $response->response = serialize($input);
+
+        $response->save();
+
+        $returnResponse=new stdClass();
+        $returnResponse->status='OK';
+        $returnResponse->message='Completed';
+
+        return Response::json($returnResponse);
+    }
+
+    /**
+     * This function gets the current mood info from Single page app and updates that into the database
+     * @return mixed
+     */
+    public function updateAPIWellbeing() {
+        $input = Input::all();
+        $user=Auth::user();
+
+        $wellbeing = new Wellbeing();
+        $wellbeing->user_id = $user->id;
+        $wellbeing->group_id = $input['groupid'];
+        $wellbeing->task_id = 0;
+        $wellbeing->mood = $input['mood'];
+
+        $wellbeing->save();
+
+        $returnResponse=new stdClass();
+        $returnResponse->status='OK';
+        $returnResponse->message='Mood updated';
+
+        return Response::json($returnResponse);
+    }
+	
+	
+	/*
+	 * 
+	 * @Author : John Le
+	 * @Function : this function is to get all the message by ID
+	 * @return : the json object contains all the messages
+	 */
+	
+	public function messageSearchByID(){
+		
+		
+		// GET ALL CURRENT USER INFORMATION
+		
+		$user = Auth::user();
+		
+		$messages = Message::where('to', '=', $user->id)->orderBy('id', 'asc') ->groupBy('from')->get();
+		
+		
+		$messagesVar = array();
+		
+		$id = 0;
+		
+		$tempUserArray = array();
+		
+		foreach($messages as $message){
+			
+			//if ($message->to != $user->id){
+			
+				$user = User::where('id', '=', $message->from)->get();
+				
+				//$carbon = new Carbon\Carbon($dateasstring);
+				//$local = $carbon->timezone($localTimeZone);
+				/*
+				
+				if (isset($tempUserArray['userid'][$message->from])){
+					$tempUserArray['userid'][$message->from]++;
+					$tempUserArray['message']['from'] = $message->from;
+					$tempUserArray['message']['to'] = $message->to;
+					$tempUserArray['message']['message'] = substr($message->message, 0, 45)." . . .";
+					$tempUserArray['message']['updated_at'] = $message['created_at']->format('F Y h:i A'); 
+					$tempUserArray['message']['username'] = $user[0]['firstname']." ".$user[0]['lastname'];
+					$tempUserArray['message']['pic'] = base64_decode($user[0]['picture']);
+				
+				}else{
+					$tempUserArray['userid'][$message->from] = 0;
+				}
+				
+				*/
+				$messagesVar[$id]['from'] = $message->from;
+				$messagesVar[$id]['to'] = $message->to;
+				$messagesVar[$id]['message'] = substr($message->message, 0, 45)." . . .";
+				$messagesVar[$id]['updated_at'] = $message['created_at']; 
+				$messagesVar[$id]['username'] = $user[0]['firstname']." ".$user[0]['lastname'];
+				$messagesVar[$id]['pic'] = base64_decode($user[0]['picture']);
+				
+				//print_r($user[0]['firstname']);
+				
+				
+				
+				
+				
+				$id++;
+			
+			//}
+			
+		}
+		
+		//exit();
+		//print_r($user['id']);
+		
+		//DB::select('DELETE from messages where to = ?', array(54));
+		
+		return Response::json($messagesVar);
+		
+	}
+	
+	
+	
+	/*
+	 * 
+	 * @Author : John Le
+	 * @Function : this function is to get the conversation between user and sender by sender ID
+	 * @return : the json object contains all the messages belong to the conversation
+	 */
+	
+	public function searchConversationByID(){
+		
+		$input = Input::all();
+		$user = Auth::user();
+		
+		$messages = array();
+		
+		
+		$umessages = Message::where('to', '=', $user['id'])->where('from', $input['id'])->get();
+		$imessages = Message::where('to', '=', $input['id'])->where('from', $user['id'])->get();
+		//echo($input['id']);
+		$i= 0;
+		
+		
+		
+		foreach($umessages as $umessage){
+			
+			if(true/*$umessage->from != $user['id'] && $umessage->to != $user['id']*/){
+			
+				$tou = DB::select('select * from users where id = ?', array($umessage->to));
+				
+				$fromu = DB::select('select * from users where id = ?', array($umessage->from));
+				
+				$messages[$i]['id'] = $umessage->id;
+				
+				$messages[$i]['message'] = $umessage->message;
+				$messages[$i]['from'] = $umessage->from;
+				$messages[$i]['to'] = $umessage->to;
+				$messages[$i]['pic'] = base64_decode($fromu[0]->picture);
+				$messages[$i]['tousername'] = $tou[0]->firstname." ".$tou[0]->lastname;
+				$messages[$i]['fromusername'] = $fromu[0]->firstname." ".$fromu[0]->lastname;
+				$messages[$i]['updated_at'] = $umessage->updated_at;  
+				
+				$i++;
+			
+			}
+		}
+		
+		
+		foreach($imessages as $imessage){
+			
+			if(true/*$imessage->from != $user['id'] && $imessage->to != $user['id']*/){
+			
+				$tou = DB::select('select * from users where id = ?', array($imessage->to));
+				
+				$fromu = DB::select('select * from users where id = ?', array($imessage->from));
+				
+				$messages[$i]['id'] = $imessage->id;
+				$messages[$i]['message'] = $imessage->message;
+				$messages[$i]['from'] = $imessage->from;
+				$messages[$i]['to'] = $imessage->to;
+				$messages[$i]['pic'] = base64_decode($fromu[0]->picture);
+				$messages[$i]['tousername'] = $tou[0]->firstname." ".$tou[0]->lastname;
+				$messages[$i]['fromusername'] = $fromu[0]->firstname." ".$fromu[0]->lastname;
+				$messages[$i]['updated_at'] = $imessage->updated_at; 
+				
+				$i++;
+			
+			}
+		}
+		
+		//print_r($messages);
+		
+		return $messages;
+	}
+	
+	
+	
+	/*
+	 * 
+	 * @Author : John Le
+	 * @Function : this function is to send the message to user by ID
+	 * @return : status code FAIL OR SUCCESS
+	 */
+	
+	public function messageSend(){
+		
+		
+		
+		$input = Input::all();
+		$user = Auth::user();
+		
+		
+		
+		$message = new Message;
+
+		$message->from = $user['id'];
+		
+		$message->to = $input['id'];
+		
+		$message->message = $input['message'];
+		
+		$message->save();
+		
+		
+		// add new record to notification table
+		
+		$this->addNotification($input['id'], 'message', $message->id, $input['message'] );
+		
+		// end
+		
+		return "OK";
+		
+	}
+	
+	
+	/*
+	 * 
+	 * @Author : John Le
+	 * @Function : add new record to notification table
+	 * @return : ( BOOL ) status code
+	 */
+	
+	public function addNotification($userid, $type, $sourceid, $message ){
+		
+		$user = Auth::user();
+		
+		$notification = new Notification;
+		
+		$notification->user_id = $userid;
+
+        if (Session::get('source_user_id')){
+            $notification->source_user_id = Session::get('source_user_id');
+        }else{
+            $notification->source_user_id = $user['id'];
+        }
+		
+		
+		
+		$notification->type = $type;
+		
+		$notification->source_id = $sourceid;
+		
+		$notification->message = $message;
+		
+		$notification->save();
+		
+		return true;
+	}
+
+
+	/*
+	 * 
+	 * @Author : John Le
+	 * @Function : this function return the number of the notifications
+	 * @return : ( int ) number of notifications
+	 */
+	
+	public function notificationNum(){
+		$user = Auth::user();
+		
+		$notification = Notification::where('user_id', '=', $user['id'])->where('isRead', '=', 0)->orderBy('id', 'DESC')->get();
+		//$notification_message = Notification::where('user_id', '=', $user['id'])->where('type', '=', 'message')->get();
+		$not = $notification[0];
+		$not['count'] = count($notification);
+		//$not['message_count'] = count($notification_message);
+		$sc = DB::select('select * from users where id = ?', array($notification[0]->source_user_id));
+		
+		$not['user'] = $sc;
+
+		
+		return $not;
+		
+	}
+	
+	
+	/*
+	 * 
+	 * @Author : John Le
+	 * @Function : this function set the status of user notification
+	 * @return : ( BOOL ) return the status code TRUE | FALSE
+	 */
+	
+	public function setNotification(){
+		$input = Input::all();
+		$user = Auth::user();
+		
+		$user = User::find($user['id']);
+
+		
+		
+		
+		
+		// NORMAL OR EMAIL NOTIFICATION
+		
+		if ($input['type'] == "normal"){
+			
+			$user->notification = $input['data'];
+			
+		}else if($input['type'] == "email") {
+			
+			$user->notification_email = $input['data'];
+			
+		}else{
+			$user->notification_web = $input['data'];
+		}
+		
+		
+		
+		$user->save();
+		
+		return "true";
+		
+	}
+	
+	
+	/*
+	 * 
+	 * @Author : John Le
+	 * @Function : this function get the status of user notification
+	 * @return : ( JSON ) return the array contain user notification setting
+	 */
+	 
+	 public function getNotification(){
+		$input = Input::all();
+		$user = Auth::user();
+		
+		$user = User::find($user['id']);
+		
+		return $user;
+		
+	 }
+	 
+	 
+	 
+	 
+	 /*
+	 * 
+	 * @Author : John Le
+	 * @Function : this function get the list of all user notifications
+	 * @return : ( JSON ) return the array contain user notification list
+	 */
+	 
+	 public function getNotificationList(){
+		$input = Input::all();
+		$user = Auth::user();
+		
+		$notifications = Notification::where('user_id', $user['id'])->orderBy('id', 'DESC')->get();
+		
+		$returnArray = array();
+		
+		$i = 0;
+		
+		foreach($notifications as $notification){
+			
+			//print_r($notification->user_id);
+
+            $msg = "new message";
+            $filterImage = "filter-msg.png";
+
+                if ($notification->type == "newlike"){
+                    $msg = "new like";
+                    $filterImage = "filter-likes.png";
+                }
+
+                if ($notification->type == "newcomment"){
+                    $msg = "new comment";
+                    $filterImage = "filter-comments.png";
+                }
+
+                if ($notification->type == "newgroupmember"){
+                    $msg = "new team member";
+                    $filterImage = "filter-new-roller.png";
+                }
+
+                if ($notification->type == "missionpending"){
+                    $msg = "mission pending";
+                }
+			
+			$user = DB::select('select * from users where id = ?', array($notification->source_user_id));
+
+            if ($user){
+
+
+			
+        			$returnArray[$i]['id'] = $notification->id;
+        			
+        			$returnArray[$i]['user_id'] = $notification->user_id;
+        			
+        			$returnArray[$i]['source_user_id'] = $notification->source_user_id;
+        			
+        			$returnArray[$i]['type'] = $notification->type;
+        			
+        			$returnArray[$i]['source_id'] = $notification->source_id;
+        			
+        			$returnArray[$i]['message'] = $notification->message;
+
+                    $returnArray[$i]['title'] = $msg;
+
+                    $returnArray[$i]['filterImage'] = $filterImage;
+        			
+        			$returnArray[$i]['isRead'] = $notification->isRead;
+
+                    $returnArray[$i]['source_id'] = $notification->source_id;
+        			
+        			$returnArray[$i]['updated_at'] = $notification->updated_at; 
+        			
+        			$returnArray[$i]['created_at'] = $notification->created_at;
+        			
+        			$returnArray[$i]['type'] = $notification->type;
+        			
+        			//$returnArray[$i]['userarray'] = $user;
+        			
+        			$returnArray[$i]['src_user_pic'] = base64_decode($user[0]->picture);
+        			
+        			$returnArray[$i]['username'] = $user[0]->firstname ." ".$user[0]->lastname;
+        			//print_r(base64_decode($user[0]->picture));
+
+            }
+			
+			DB::table('notifications')->where('id', $notification->id)->update(array('isRead' => 1));
+			
+			$i++;
+			
+			
+			
+		}
+		
+		
+		return $returnArray;
+		
+	 }
+
+
+	/*
+	 * 
+	 * @Author : John Le
+	 * @Function : this function get the list of either presurvey or post survey questions
+	 * @return : ( JSON ) return the array contains certain survey list
+	 */
+	 
+	 public function getSurveyList(){
+	 	
+		
+	 		$input = Input::all();
+			
+			
+			if ($input['type'] == 'pre'){
+				
+				$group = Group::where('id', $input['groupid'])->pluck('survey');
+				
+				//print_r($group);
+				
+				$survey = Survey::where('id', $group)->get();
+				
+			}else{
+				
+				$group = Group::where('id', $input['groupid'])->pluck('postsurvey');
+				
+				$survey = Survey::where('id', $group)->get();
+				
+			}	
+			
+			$ret = str_replace('{"fields":',"",rtrim(unserialize($survey[0]->data)[0]));
+			
+			$ret = rtrim($ret, "}");
+		
+			return $ret;
+		
+	 }
+	 
+	 
+	 /*
+	 * 
+	 * @Author : John Le
+	 * @Function : save user sign-up form to the database
+	 * @return : ( BOOL ) return the status in BOOL (true | false)
+	 */
+	 
+	 public function apiSignUp(){
+	 	
+			$message = "";
+
+
+            $securimage = new Securimage();
+
+            $input = Input::all();
+
+            if (!isset($input['securitycode'])){
+                $input['securitycode'] = "";
+            }
+
+
+
+            if ($securimage->check($input['securitycode']) == false) {
+                  $message = "Invalid security code";
+            }else{
+
+
+
+		
+		
+            
+
+            $rules = array(
+                'username' => 'required|unique:users',
+                'password' => 'required',
+                'screenhandle' => 'required',
+                'email' => 'required|unique:users|email',
+                'firstname' => 'required|alpha',
+                'lastname' => 'required',
+                'city' => 'required',
+                'country' => 'required',
+            );
+            
+            $messages = array(
+                'screenhandle.required' => 'The Roller name can not be blank'
+            );
+
+            //$validator = Validator::make($input, $rules, $messages);
+            
+            $username =  DB::table('users')
+                ->where('username', Input::get('username'))
+                ->get();
+			
+			$user =  DB::table('users')
+                ->where('email', Input::get('email'))
+                ->get();
+			
+			$group = DB::table('groups')
+                ->where('keycode', Input::get('keycode'))
+                ->get();
+				
+			//print_r($user);	
+			
+			//print_r(count($group));
+			
+			// error check
+			
+			if (!Input::get('state')){
+				
+				$message = "State is invalid !";
+				
+			}
+
+
+
+            
+
+
+            if (!Input::get('password')){
+                
+                $message = "Password can not be blank";
+                
+            }
+
+            if (!Input::get('username')){
+                
+                $message = "Username can not be blank";
+                
+            }
+
+            if (!Input::get('lastname')){
+                
+                $message = "Lastname can not be blank";
+                
+            }
+
+            if (!Input::get('firstname')){
+                
+                $message = "Firstname can not be blank ";
+                
+            }
+
+
+            if (!Input::get('securitycode')){
+                $message = "Security code can't be blank !";
+            }
+
+            
+            if (!Input::get('tos')){
+                
+                $message = "You need to agree with EULA";
+                
+            }
+            
+            
+			
+			if (count($group) == 0){
+				$message = "Your keycode is invalid !";
+			}
+
+            
+            
+
+
+            if (filter_var(Input::get('email'), FILTER_VALIDATE_EMAIL) === false) {
+               $message = "Please enter a valid email address !";
+            }
+			
+			if (count($user) > 0){
+				$message = "This email is already exist !";
+			}
+			
+			
+            if (Input::get('email') != Input::get('confirmemail')){
+
+                $message = "Inconsistent email !";
+            }
+
+
+            if (count($username) > 0){
+                $message = "This username is already exist !";
+            }
+			
+			// end error check
+			
+			
+			
+			
+			//echo $message;
+
+            // get incremental number
+			
+			$rollername = "Roller ".rand(1, 999);;
+
+            // generate roller name
+
+
+            //print_r($input['securitycode']);
+
+
+			
+			
+			
+			
+			if (!$message){
+					
+					// begin the sigh - up proccess
+					
+					$user = new User;
+
+	                $user->username = Input::get('username');
+	                //$user->password = Hash::make(Input::get('password'));
+	                $user->password = Hash::make(Input::get('password'));
+	                $user->screenhandle=$rollername;
+	                $user->firstname = Input::get('firstname');
+	                $user->lastname = Input::get('lastname');
+	                $user->email = Input::get('email');
+					//$user->picture = "L3VwbG9hZHMvcGl4L3VzZXIvam9obi5sZS5wbmc=";
+	                $user->state = Input::get('state');
+	                //$user->country = Input::get('country');
+	                $user->keycode = Input::get('keycode');
+	                //$user->description = Input::get('description');
+	                //$user->picture = '';
+	                $user->suspended = 0;
+	
+	               // add the user to the default group Sydney Group
+	
+	                 $user->save();
+	                
+	                
+					 $groupuser = new GroupUser;
+					 
+					 //// Search the matching keycode inside the group table then enroll user to that group
+					 
+					 if ($user->keycode){
+					
+							 $group = Group::where('keycode', strtolower ( Input::get('keycode') ))->get();
+							 
+							 //print_r($group[0]->id);
+							 
+							 // check this constaint
+							 
+							 
+							
+							 $groupuser->group_id = $group[0]->id;
+					 
+							 $groupuser->user_id = $user->id;
+							 
+							 $groupuser->save();
+
+                             // add notification to the group
+
+                             //$this->addNotification($post->user_id, 'newgroupmember', $input['postid'], "likes your post" );
+
+                             //loop thru
+
+                             $this->sendNotificationToGroup($group[0]->id, $user->id);
+
+                             // end notification adding
+						
+					 }
+
+                     if (Input::get('token')){
+
+                         DB::table('custom_user_token')->insert(
+                            array('user_id' => $user->id, 'token' => Input::get('token'))
+                        );
+
+                     }
+					 
+					//New Account confirmation email
+					$this->notificationEmail(
+						Input::get('email'), 
+						
+						'<html>
+						<head>
+						<title>On A Roll 21&trade; Registration</title>
+						<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+						
+						</head>
+						<body bgcolor="#FFFFFF">
+									
+							
+									
+									
+							
+							<table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" bgcolor="#f3f6f8">
+								<tbody>
+								<tr>
+								<td>
+								<table width="700" border="0" cellspacing="0" cellpadding="0" align="center" style="margin:0 auto" bgcolor="#f3f6f8">
+								<tbody>	
+								<tr>
+									
+									<td align="right" style="padding:7px 19px">
+										<div style="font-family:Verdana,sans-serif;color:#666666;font-size:10px;line-height:1em">
+										<a href="http://app.onaroll21.com/#/login" style="color:#666666;font-family:Verdana,sans-serif;font-size:10px;white-space:nowrap" target="_blank">Login</a>&nbsp; &nbsp; | &nbsp; &nbsp; 
+										<a href="http://app.onaroll21.com/#/howtoOutside" style="color:#666666;font-family:Verdana,sans-serif;font-size:10px;white-space:nowrap" target="_blank">How To Play</a>&nbsp; &nbsp; | &nbsp; &nbsp; 
+										<a href="http:app.onaroll21.com/#/supportTicketOut" style="color:#666666;font-family:Verdana,sans-serif;font-size:10px;white-space:nowrap" target="_blank">Support</a>
+									</td>
+								</tr>	
+								</tbody>	
+								</table>
+								</td>
+								</tr>
+								<tr>
+								<td align="center" style="padding:20px 20px 0px 20px;"><img src="http://app.onaroll21.com/images/registration-email-header.jpg" width="699" alt=""></td></tr>
+								<tr>
+								
+								
+									<td width="100%" style="padding:0px 20px 40px 20px;background-color:#f3f6f8" bgcolor="#f3f6f8">
+										
+										
+										<table width="700" border="0" cellspacing="0" cellpadding="0" align="center" style="margin:0 auto">
+											<tbody><tr>
+												<td width="700">
+													<table width="700" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+														<tbody>
+														<tr>
+															<td width="1" height="30" bgcolor="#dadada" style="background-color:#dadada"></td>
+															<td width="698"></td>
+															<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+														</tr>
+														<tr>
+															<td width="1" height="55" bgcolor="#dadada" style="background-color:#dadada"></td>
+															<td width="698" align="left">
+																<table>
+																	<tbody><tr>
+																		<td valign="top"><div style="margin:5px 0px 0px 44px;font-family:Verdana,sans-serif;color:#444444;font-size:30px;line-height:1.3em">Your New Roller Account!<br></div>
+																		</td>
+																	</tr>
+																</tbody></table>
+															</td>
+															<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+														</tr>
+														<tr>
+															<td width="1" height="30" bgcolor="#dadada" style="background-color:#dadada"></td>
+															<td width="698"></td>
+															<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+														</tr>
+														
+														<tr>
+															<td width="1" height="34" bgcolor="#dadada" style="background-color:#dadada"></td>
+															<td width="698">
+															
+															<img src="http://app.onaroll21.com/images/header-shadow.jpg" width="698" height="34" alt="headershadow ">
+															</td>
+															<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+														</tr>
+														<tr>
+															<td width="1" height="96" bgcolor="#dadada" style="background-color:#dadada"></td>
+															<td width="698" align="center">
+																<table width="698" border="0" cellspacing="0" cellpadding="0">
+																	<tbody><tr>
+																		<td width="44"></td>
+																		<td width="610" align="left">
+																
+																			
+																			<div style="margin:10px 15px 0px 2px;font-family:Verdana,sans-serif;color:#444444;font-size:14px;line-height:1.5em">
+																				Hi '.Input::get('firstname').'<br><br>
+																				
+																				Thank you for signing up for On A Roll 21&trade;. You may now log in and start letting your team mates know how you roll!<br><br>
+																				
+																				username:'.Input::get('username').'<br>
+																				password:'.Input::get('password').'<br><br>
+																				<a target="_blank" href="http://app.onaroll21.com"><img style="border-style: none; border: 0;" src="http://app.onaroll21.com/images/btn-login-edm.png" alt="LOGIN"></a><br><br>
+																				
+																				To play On A Roll 21&trade; you will need to upload photos from your device. For convenience, we highly recommend saving the website to your phone as a bookmarked site, so you can open it up like an app. <br><br>
+																				
+																				If you are unsure how to do this please follow these instructions:<br><br>
+																				
+																				<a href="http://blog.answerqi.com/google-chrome-for-iphone-ipad-how-to-add-bookmarks/" target="_blank">For iphone or ipad</a><br>
+																				<a href="http://smallbusiness.chron.com/create-bookmark-android-phone-30412.html" target="_blank">For android</a><br>
+																				For a quick rundown on how to play, visit On A Roll 21&trade; <a href="http://app.onaroll21.com/#/howtoOutside" target="_blank">How To Play</a>.<br><br>
+																				
+																				Happy rolling!<br><br>
+																				
+																				Master Roller<br>
+																				On A Roll 21&trade;
+																				
+																			</div>
+																		</td>
+																		<td width="44"></td>
+																	</tr>
+																</tbody></table>
+															</td>
+															<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+														</tr>
+														<tr>
+															<td width="1" height="40" bgcolor="#dadada" style="background-color:#dadada"></td>
+															<td width="698"></td>
+															<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+														</tr>		
+														<tr>
+															<td width="700" height="7" valign="top" colspan="3"><img src="http://app.onaroll21.com/images/bottom.gif" alt="" width="700" height="7" border="0" style="display:block;margin:0"</td>
+														</tr>
+													</tbody></table>
+												</td>
+											</tr>
+										</tbody></table>
+										
+										
+										<table width="700" border="0" cellspacing="0" cellpadding="0" align="center" style="margin:0 auto">
+											<tbody><tr>
+												<td style="padding:20px 20px 10px 20px">
+														
+													<div style="font-family:Verdana,sans-serif;font-size:10px;line-height:1.4em;color:#888888">
+														<div style="font-family:Verdana,sans-serif;font-size:9px;line-height:12px;color:#858585"><p><strong>Do not reply to this email.</strong> This email is intended solely for the use of the  addressee and contains information that is confidential or privileged.</p>
+																  
+														This email belongs to On A Roll 21&trade; is governed by the Terms &amp; Conditions agreed on registration, including disclaimers and limitations of liability.<br/><br/>
+														  
+														  <strong>Please consider the environment before printing this email.</strong></div>
+													</div>
+												</td>
+											</tr>
+											<tr></tr>
+										</tbody></table>
+									</td>
+								</tr>
+							</tbody>
+							</table>
+							</body>
+						</html>'
+						,"Welcome to On A Roll 21™", Input::get('firstname').' '.Input::get('lastname'));
+						
+						
+				
+					// end the sign up process
+                	
+					$message =  "true"; 
+					
+            }
+
+
+        }
+			
+			
+		
+		return $message;
+		
+	 }
+
+     // this function to check whether the email address is valid or not
+     // return true | false
+     function regexpValidation($email) {
+            $pattern = '/^(?!(?:(?:\\x22?\\x5C[\\x00-\\x7E]\\x22?)|(?:\\x22?[^\\x5C\\x22]\\x22?)){255,})(?!(?:(?:\\x22?\\x5C[\\x00-\\x7E]\\x22?)|(?:\\x22?[^\\x5C\\x22]\\x22?)){65,}@)(?:(?:[\\x21\\x23-\\x27\\x2A\\x2B\\x2D\\x2F-\\x39\\x3D\\x3F\\x5E-\\x7E]+)|(?:\\x22(?:[\\x01-\\x08\\x0B\\x0C\\x0E-\\x1F\\x21\\x23-\\x5B\\x5D-\\x7F]|(?:\\x5C[\\x00-\\x7F]))*\\x22))(?:\\.(?:(?:[\\x21\\x23-\\x27\\x2A\\x2B\\x2D\\x2F-\\x39\\x3D\\x3F\\x5E-\\x7E]+)|(?:\\x22(?:[\\x01-\\x08\\x0B\\x0C\\x0E-\\x1F\\x21\\x23-\\x5B\\x5D-\\x7F]|(?:\\x5C[\\x00-\\x7F]))*\\x22)))*@(?:(?:(?!.*[^.]{64,})(?:(?:(?:xn--)?[a-z0-9]+(?:-+[a-z0-9]+)*\\.){1,126}){1,}(?:(?:[a-z][a-z0-9]*)|(?:(?:xn--)[a-z0-9]+))(?:-+[a-z0-9]+)*)|(?:\\[(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){7})|(?:(?!(?:.*[a-f0-9][:\\]]){7,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?)))|(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){5}:)|(?:(?!(?:.*[a-f0-9]:){5,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3}:)?)))?(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))(?:\\.(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))){3}))\\]))$/iD';
+            return preg_match($pattern,$email);
+    }
+
+
+
+     public function sendNotificationToGroup($groupid, $userid){
+
+            //print_r($groupid.'userid'.$userid);
+            
+            $groupUser = GroupUser::where('group_id', $groupid)->where('user_id', '!=', $userid)->get();
+
+            foreach ($groupUser as &$value) {
+                //echo $value->user_id;
+                Session::put('source_user_id', $userid);
+                $this->addNotification($value->user_id, 'newgroupmember', $userid, "has just joined your team" );
+            }
+
+            //print_r($groupUser);
+
+
+     }
+
+
+
+	  public function saveSResponse() {
+        
+        
+        $input=Input::all();
+        $survey=Survey::find($input['surveyid']);
+        $group=Group::find($input['groupid']);
+        $user=User::find($input['userid']);
+        
+        if(is_null($survey) || is_null($group) || is_null($user)) {
+            //App::abort(404);
+        }
+        
+        $response = New SurveyResponse();
+        $response->user_id = $input['userid'];
+        $response->group_id = $input['groupid'];
+        $response->survey_id = $input['surveyid'];
+        $response->type = $input['type'];
+        $response->response = serialize($input);
+        
+        $response->save();
+        
+        
+		 
+		 
+		 return "true";
+        
+    }
+	
+	
+     /*
+	 * 
+	 * @Author : John Le
+	 * @Function : Detect whether the mission is the last mission or not 
+	 * @return : ( BOOL ) return the status in BOOL (true | false)
+	 */
+	 
+	 
+	 public function detectLastMission(){
+	 	
+	 	$input=Input::all();
+		
+		
+		$group = Group::where('id', trim(Input::get('groupid')))->get();
+		
+		$outcomeID = $group[0]['outcome'];
+		
+		$finalTask = DB::table('final_task')
+                ->where('outcome_id',$outcomeID)
+                ->pluck('task_id');
+		
+		return $finalTask;
+		
+	 }
+	 
+	 /*
+	 * 
+	 * @Author : John Le
+	 * @Function : Send email notification
+	 * @return : ( BOOL ) return the status in BOOL (true | false)
+	 */
+	 
+	 
+	 public function notificationEmail($email,$msg, $header, $name){
+	 	
+	 	$input=Input::all();
+		
+		$user = array(
+			'email'=>$email,
+			'header'=>$header,
+			'name' => $name
+		);
+		
+		// the data that will be passed into the mail view blade template
+		$data = array(
+			'detail'=>$msg
+			
+		);
+		
+		// use Mail::send function to send email passing the data and using the $user variable in the closure
+		Mail::send('emails.notification', $data, function($message) use ($user)
+		{
+		  $message->from('support@onaroll21.com', 'On A Roll 21™');
+		  $message->to($user['email'], $user['name'])->subject($user['header']);
+		});
+		
+		return $input;
+	 
+	 }
+	 
+	 
+	 /*
+	 * 
+	 * @Author : John Le
+	 * @Function : check if whether the pre survey of selected group completed or not
+	 * @return : ( BOOL ) return the status in BOOL (true | false)
+	 */
+	 
+	 public function isPresurveyCompleted(){
+	 	$input=Input::all();
+		$user = Auth::user();
+		
+		$ret = "false";
+
+        // set the timestamp for the last_login field
+
+        /*DB::table('users')
+            ->where('id', $user['id'])
+            ->update(array('last_login' => time()));
+            */
+		
+		$surveyResponse = DB::table('survey_response')->where('user_id', $user['id'])->where('group_id', $input['groupid'])->where('type', 'pre')->first();
+		
+		if ($surveyResponse){
+			$ret = "true";
+		}
+		
+		return $ret;
+		
+	 }
+	 
+	 
+	 public function areAllTasksDone(){
+	 	
+		$input=Input::all();
+		$user = Auth::user();
+		
+		$ret = "false";
+		
+		$group = Group::find($input['groupid']);
+        $outcome = Outcome::find($group->outcome);
+		
+		
+        $availArray = array_fetch($outcome->tasks->toArray(), 'id');
+		
+		$availArrayCount = count($availArray);
+		
+		$tmpUserTaskArray = DB::table('user_tasks')->where('outcome_id', $group->outcome)->where('user_id', $user['id'])->lists('task_id');
+			
+		
+		if ($availArrayCount == count($tmpUserTaskArray)){
+			
+			// user finished all the tasks
+			$ret = "true";
+			
+			
+		}
+		
+		return $ret;
+		
+	 }
+
+
+     /*
+     * 
+     * @Author : John Le
+     * @Function : return true if there is an inactive task for more than 8 hours
+     * @return : ( BOOL ) return the status in BOOL (true | false)
+     */
+
+     public function getInactiveTask(){
+
+            $ret = "false";
+
+
+
+            // get pending task content
+
+
+
+
+
+            // check if there is more than 8 hours
+
+
+
+
+
+            return $ret;
+
+
+     }
+
+    /*
+     * 
+     * @Author : John Le
+     * @Function : update the user profile
+     * @return : return status code and error message ( if capable )
+     */
+
+     public function updateUserProfile(){
+
+            $ret = "false";
+            $input=Input::all();
+            $user = Auth::user();
+
+            $message = "OK";
+
+            if ($input['file']){
+
+
+                if (file_exists(public_path().base64_decode($user['picture']))){
+
+                                if ($user['picture'] != "L3VwbG9hZHMvcGl4L3VzZXIvZGVmYXVsdC5naWY="){
+
+                                    unlink(public_path().base64_decode($user['picture']));
+                                    //$message = "unlink !";
+
+                                }
+                }
+
+
+
+                $fileType = explode('/',$input['fileType']);
+
+                //print_r(strtolower($user['firstname'].'.'.$user['lastname']));
+
+
+                $filepath = public_path().'/uploads/pix/user/'.strtolower($user['firstname']).'.'.strtolower($user['lastname']).'.'.$fileType[1];
+
+
+                //$input['img']
+
+                $this->base64_to_jpeg($input['file'], $filepath);
+
+                //$message = "cool";
+
+            }
+
+            /////// condition check
+
+
+            $userEmailCheck =  DB::table('users')
+                ->where('email', Input::get('email'))
+                ->where('id', '!=' ,$user->id) 
+                ->get();
+            
+            $userScreenNameCheck =  DB::table('users')
+                ->where('screenhandle', Input::get('screenname'))
+                ->where('id', '!=' ,$user->id) 
+                ->get();
+            
+            
+            // error check
+            
+            
+            
+            // check the email address
+
+            if (count($userEmailCheck) > 0){
+                $message = "This email is already exist !";
+            }
+
+            // check the sceen handle
+
+            if (count($userScreenNameCheck) > 0){
+                $message = "This screen name is already taken !";
+            }
+
+            
+
+            if ($message == "OK"){
+                    ////// begin the database updating process
+
+                    $userUpdate = User::find($user->id);
+
+                    
+                    if (isset($input['password'])){
+                        $userUpdate->password = Hash::make(Input::get('password'));
+                    }
+                    $userUpdate->screenhandle=Input::get('screenname');
+                    $userUpdate->firstname = Input::get('firstname');
+                    $userUpdate->lastname = Input::get('lastname');
+                    $userUpdate->email = Input::get('email');
+
+                    //print_r(file_exists(public_path().base64_decode($user['picture'])));
+
+                    if (isset($filepath)){
+                        
+                        
+                        $userUpdate->picture = base64_encode('/uploads/pix/user/'.strtolower($user['firstname']).'.'.strtolower($user['lastname']).'.'.$fileType[1]);
+                        
+                    }
+
+                    
+                    $userUpdate->state = Input::get('state');
+                    //$user->country = Input::get('country');
+                    
+    
+                   
+    
+                     $userUpdate->save();
+
+                    ////// end the database updating process
+            }
+
+
+            
+
+            
+
+
+
+
+
+            return $message;
+
+
+     }
+
+
+
+
+     public function base64_to_jpeg($base64_string, $output_file) {
+        $ifp = fopen($output_file, "wb"); 
+
+        $data = explode(',', $base64_string);
+
+        fwrite($ifp, base64_decode($data[1])); 
+        fclose($ifp); 
+
+        return $output_file; 
+    }
+
+    // this function ll help to reset the user password
+
+    public function forgotPwd(){
+
+        $returnMessage = "";
+
+        $temporaryPassword = substr(md5(time()), 0, 8);
+
+        $userEmailCheck =  DB::table('users')
+                ->where('email', Input::get('email'))
+                ->get();
+            
+            
+            // check the email address
+
+        if (count($userEmailCheck) == 0){
+            $returnMessage = "This email doesn't exist !";
+        }
+
+        if ($returnMessage == ""){
+            $userUpdate = User::find($userEmailCheck[0]->id);
+            $userUpdate->password = Hash::make($temporaryPassword);
+            $userUpdate->save();
+
+            //print_r($userEmailCheck[0]->id);
+
+            $this->notificationEmail(
+                        Input::get('email'),'Your temporary password is : '.$temporaryPassword
+                        ,"Reset your password", Input::get('firstname').' '.Input::get('lastname'));
+
+            
+            $returnMessage = "OK";
+        }
+
+        return $returnMessage;
+
+
+    }
+
+
+    // this function will send email to support@onaroll21.com
+
+    public function supportFeedback(){
+
+        $input=Input::all();
+        $user = Auth::user();
+
+        if (!isset($input['name'])){
+                $input['name'] = $user['firstname'].' '.$user['lastname'];
+
+        }
+
+
+        if (!isset($input['email'])){
+                $input['email'] = $user['email'];
+
+        }
+
+        
+
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
+
+        // Additional headers
+        $headers .= 'To: '.$input['name'].' <'.$input['email'].'>' . "\r\n";
+        
+        
+
+        mail("support@onaroll21.com", $input['type'],"Name : ".$input['name'].'<br/>'."Email : ".$input['email'].'<br/>'."Message : ".$input['feedback'],$headers);
+
+
+    }
+
+    // this cron job function is for the server to access once a day
+
+    public function notificationEmailCron(){
+
+
+
+        
+
+        // read user data from the database
+        $users =  DB::table('users')
+                ->where('notification_email', 1)
+                ->get();
+
+        $dataArray = array();        
+
+
+        // loop thru all the users with email_notification enable
+
+        foreach($users as $user){
+
+                // select groupid based on user_id from user table
+                $groupid = DB::table('group_users')
+                ->where('user_id', $user->id)
+                ->pluck('group_id');
+
+
+                // select group_name based on user_id from user table
+                $group_name = DB::table('groups')
+                ->where('id', $groupid)
+                ->pluck('name');
+
+                // get pending_task of every user
+
+                $pendingTask = DB::table('user_tasks')
+                ->where('user_id', $user->id)
+                ->where('group_id', $groupid)
+                ->orderBy('id', 'desc')
+                ->first();
+
+                // get all the notifications that belong to user
+
+                $notifications = DB::table('notifications')
+                ->where('user_id', $user->id)
+                ->orderBy('id', 'desc')
+                ->take(10)->get();
+
+                
+                //print_r($group);
+
+                //$pendingTaskArray = (array) $pendingTask;
+                // begin pending task if
+
+
+                if ($pendingTask){
+
+                    //$array = get_object_vars($pendingTask);
+
+                    //print_r($pendingTask);
+                    
+                    // convert mysql time format to unix timestamp
+
+                    $timestamp = strtotime($pendingTask->created_at);
+
+                    //print_r($timestamp.'<br/>');
+
+                    //echo gmdate("Y-m-d\TH:i:s\Z", $timestamp);
+
+
+                    // every 7 days
+                    if (time() - 604800 >= $timestamp){
+
+                            $dataArray[$user->id]['pending_task'] = 1;
+
+                    }
+
+                    // everyday
+                    if (time() - 86400 >= $timestamp){
+
+                            $dataArray[$user->id]['pending_task_everyday'] = 1;
+
+                    }
+
+                    
+
+                }
+                $dataArray[$user->id]['firstname'] = $user->firstname;
+                $dataArray[$user->id]['lastname'] = $user->lastname;
+                $dataArray[$user->id]['email'] = $user->email;
+                // end pending task if
+                // create notification counter
+
+                $notificationCounter = 0;
+
+                if ($notifications){
+
+                    $dataArray[$user->id]['notification'] = $notifications;
+
+                    $notificationCounter++;
+                }
+
+
+
+        }
+
+        //print_r($dataArray);
+        
+        
+        foreach ($dataArray as $key => $value) {
+            # code...
+            //print_r ($value['lastname']);
+
+
+
+            $mailContent = "Hi ".$value['firstname']."<br/>";
+
+            // if there is a pending task the last 7 days
+
+            //if (isset($value['pending_task'])){
+
+             //   $mailContent .= "Just a friendly reminder that your team mates need you! If you haven't already, please log in to On A Roll 21&trade; and let them know how you roll.<br/><br/>";
+
+
+
+            //}
+
+            // if there is a pending task the last 24 hours
+            if (isset($value['pending_task_everyday'])){
+
+                $mailContent .= "Just a friendly reminder that your team mates need you! If you haven't already, please log in to On A Roll 21&trade; and let them know how you roll.<br/><br/>";
+
+
+
+            }
+
+            $arr = (object) $value;
+
+            if (isset($value['notification'])){
+
+				$mailContent .= "Your latest notifications in Team ".$group_name.":<br/>";
+
+                //print_r($value);
+				
+                foreach ($value['notification'] as $key => $value) 
+                {
+
+
+                    $m = new \MomentPHP\MomentPHP($value->created_at);
+                    $momentFromVo = $m->fromNow();
+
+                    //print_r($momentFromVo);
+
+                    
+
+                    $unixTime = new DateTime($value->updated_at);
+                    //echo $unixTime->getTimestamp().'<br/>';
+
+                    if (time() - $unixTime->getTimestamp() <= 432000){
+
+                    // message type
+                    if ($value->type == "message"){
+
+                        $userArray = DB::table('users')
+                        ->where('id', $value->source_user_id)
+                        ->pluck("firstname");
+
+                        $mailContent .= $userArray.' sent you a message: '.$value->message.' [ '.$momentFromVo.' ] <br/>';
+
+                        //print_r($mailContent);
+
+                    }
+
+                    // new roller type
+                    if ($value->type == "newgroupmember"){
+
+                        $userArray2 = DB::table('users')
+                        ->where('id', $value->source_user_id)
+                        ->pluck("firstname");
+
+                        $mailContent .= $userArray2.' has joined your team [ '.$momentFromVo.' ] <br/>';
+
+                        
+
+                    }
+
+
+                    // new like
+                    if ($value->type == "newlike"){
+
+                        $userArray2 = DB::table('users')
+                        ->where('id', $value->source_user_id)
+                        ->pluck("firstname");
+
+                        $mailContent .= $userArray2.' liked your post [ '.$momentFromVo.' ] <br/>';
+
+                        
+
+                    }
+
+
+                    // new lcomment
+                    if ($value->type == "newcomment"){
+
+                        $userArray2 = DB::table('users')
+                        ->where('id', $value->source_user_id)
+                        ->pluck("firstname");
+
+                        $mailContent .= $userArray2.' commented on your post [ '.$momentFromVo.' ] <br/>';
+
+                        
+
+                    }
+
+
+                }else{
+                        $mailContent .= 'You currently have no notifications for the last 5 days';
+                    }
+
+
+
+                }
+
+            }
+            
+            
+            $notificationEmailBody = '<html>
+            <head>
+            <title>On A Roll 21&trade; Registration</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+            
+            </head>
+            <body bgcolor="#FFFFFF">
+            
+            <table width="100%" border="0" cellspacing="0" cellpadding="0" align="center" bgcolor="#f3f6f8">
+            
+            
+            
+            
+            	<tbody><tr>
+            		<td width="100%" style="padding:20px 20px 40px 20px;background-color:#f3f6f8" bgcolor="#f3f6f8">
+            			<table width="700" border="0" cellspacing="0" cellpadding="0" align="center" style="margin:0 auto">
+            				<tbody><tr>
+            					<td>
+            						<div style="margin:0px 0px 12px 15px"><img src="http://app.onaroll21.com/images/oar-logo-large.png" width="150px" alt="On A Roll 21&trade;" border="0"></div>
+            					</td>
+            					<td align="right" style="padding:7px 19px">
+            						<div style="font-family:Verdana,sans-serif;color:#666666;font-size:10px;line-height:1em">
+            						<a href="http:app.onaroll21.com/#/login" style="color:#666666;font-family:Verdana,sans-serif;font-size:10px;white-space:nowrap" target="_blank">Login</a>&nbsp; &nbsp; | &nbsp; &nbsp; 
+            						<a href="http:app.onaroll21.com/#/supportTicketOut" style="color:#666666;font-family:Verdana,sans-serif;font-size:10px;white-space:nowrap" target="_blank">Support</a>
+            					</td>
+            				</tr>
+            			</tbody></table>
+            			
+            			<table width="700" border="0" cellspacing="0" cellpadding="0" align="center" style="margin:0 auto">
+            				<tbody><tr>
+            					<td width="700">
+            						<table width="700" border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+            							<tbody><tr>
+            								<td width="700" height="4" valign="bottom" colspan="3"><img src="http://app.onaroll21.com/images/top.gif" alt="" width="700" height="4" border="0" style="display:block;margin:0"</td>
+            							</tr>
+            							<tr>
+            								<td width="1" height="30" bgcolor="#dadada" style="background-color:#dadada"></td>
+            								<td width="698"></td>
+            								<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+            							</tr>
+            							<tr>
+            								<td width="1" height="55" bgcolor="#dadada" style="background-color:#dadada"></td>
+            								<td width="698" align="left">
+            									<table>
+            										<tbody><tr>
+            											<td valign="top"><div style="margin:5px 44px 0px 44px;font-family:Verdana,sans-serif;color:#444444;font-size:30px;line-height:1.3em">Another Day Rolls By!..<br></div>
+            											</td>
+            										</tr>
+            									</tbody></table>
+            								</td>
+            								<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+            							</tr>
+            							<tr>
+            								<td width="1" height="30" bgcolor="#dadada" style="background-color:#dadada"></td>
+            								<td width="698"></td>
+            								<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+            							</tr>
+            							
+            							<tr>
+            								<td width="1" height="34" bgcolor="#dadada" style="background-color:#dadada"></td>
+            								<td width="698">
+            								
+            								<img src="http://app.onaroll21.com/images/header-shadow.jpg" width="698" height="34" alt="headershadow ">
+            								</td>
+            								<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+            							</tr>
+            							<tr>
+            								<td width="1" height="96" bgcolor="#dadada" style="background-color:#dadada"></td>
+            								<td width="698" align="center">
+            									<table width="698" border="0" cellspacing="0" cellpadding="0">
+            										<tbody><tr>
+            											<td width="44"></td>
+            											<td width="610" align="left">
+            									
+            												
+            												<div style="margin:10px 15px 0px 2px;font-family:Verdana,sans-serif;color:#444444;font-size:14px;line-height:1.5em">
+            													'.$mailContent.'<br>
+            													
+            													<a target="_blank" href="http://app.onaroll21.com"><img style="border-style: none; border: 0;" src="http://app.onaroll21.com/images/btn-login-edm.png" alt="LOGIN"></a><br><br><br>
+            													
+            													Master Roller<br>
+            													On A Roll 21&trade;<br>
+            													
+            												</div>
+            											</td>
+            											<td width="44"></td>
+            										</tr>
+            									</tbody></table>
+            								</td>
+            								<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+            							</tr>
+            							<tr>
+            								<td width="1" height="40" bgcolor="#dadada" style="background-color:#dadada"></td>
+            								<td width="698"></td>
+            								<td width="1" bgcolor="#dadada" style="background-color:#dadada"></td>
+            							</tr>	
+                                        
+            							<tr>
+            								<td width="700" height="7" valign="top" colspan="3"><img src="http://app.onaroll21.com/images/bottom.gif" alt="" width="700" height="7" border="0" style="display:block;margin:0"</td>
+            							</tr>
+            						</tbody></table>
+            					</td>
+            				</tr>
+            			</tbody></table>
+            			
+            			
+            			<table width="700" border="0" cellspacing="0" cellpadding="0" align="center" style="margin:0 auto">
+            				<tbody><tr>
+            					<td style="padding:20px 20px 10px 20px">
+            							
+            						<div style="font-family:Verdana,sans-serif;font-size:10px;line-height:1.4em;color:#888888">
+            							<div style="font-family:Verdana,sans-serif;font-size:9px;line-height:12px;color:#858585"><p><strong>Do not reply to this email.</strong> This email is intended solely for the use of the  addressee and contains information that is confidential or privileged.</p>
+            									  
+            							This email belongs to On A Roll 21&trade; is governed by the Terms &amp; Conditions agreed to on registration, including disclaimers and limitations of liability.<br/><br/>
+            							  
+            							  <strong>Please consider the environment before printing this email.</strong>
+
+                                          <a href="http://app.onaroll21.com/api/email/unsubscribe/'.$arr->email.'">Unsubscribe</a>
+                                          </div>
+            						</div>
+            					</td>
+            				</tr>
+
+            				<tr></tr>
+            			</tbody></table>
+            		</td>
+            	</tr>
+            </tbody>
+            </table>
+            
+            
+            </body>
+            </html>';
+
+            if (isset($arr->notification)){
+
+                $this->notificationEmail($arr->email, $notificationEmailBody,"Another Day Rolls By!..", "");
+
+            }
+
+            //echo "OK";
+            
+
+            
+        }
+
+        
+
+
+             
+    }
+
+
+    public function moodCheckTime(){
+
+        $user = Auth::user();
+
+        DB::table('users')
+            ->where('id', $user['id'])
+            ->update(array('last_login' => time()));
+
+    }
+
+
+    public function taskCompleted(){
+
+        $user = Auth::user();
+
+        $groupid = DB::table('group_users')
+                ->where('user_id', $user->id)
+                ->pluck('group_id');
+
+
+        $userArray = DB::table('user_tasks')
+                ->where('user_id', $user->id)
+                ->where('group_id', $groupid)
+                ->get();
+
+
+         return count($userArray);         
+
+
+    }
+
+
+
+    public function emailUnsubscribe(){
+
+        $input=Input::all();
+
+        //print_r($_SERVER['REQUEST_URI']);
+
+        $mail = explode("/" , $_SERVER['REQUEST_URI']);
+
+        //print_r(trim($mail[4]));
+
+
+        DB::table('users')
+            ->where('email', trim($mail[4]))
+            ->update(array('notification_email' => 0));
+
+        //$message = "Unsubscribe successfully.";
+
+        return View::make('api.unsubscribe');
+
+        
+
+    }
+
+    
+   public function completePreSurvey(){
+
+
+        $input=Input::all();
+        //$inputSurvey=$input['survey'];
+
+
+        $survey=Survey::find($input['surveyid']);
+        $group=Group::find($input['groupid']);
+        $user=Auth::user();
+
+        $response = New SurveyResponse();
+        $response->user_id = $user->id;
+        $response->group_id = $input['groupid'];
+        $response->survey_id = $input['surveyid'];
+        $response->type = "pre";
+        $response->response = serialize("");
+
+        $response->save();
+
+
+        return "";
+
+   }  
+	
+}

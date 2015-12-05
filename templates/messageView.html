@@ -1,0 +1,99 @@
+<!--<div id="sp-nav">-->
+    <!--<slide-menu></slide-menu>-->
+<!--</div>-->
+<!--<div id="sp-page">-->
+<!--<page-header></page-header>-->
+<!--<div class="content-wrapper">-->
+<!--&lt;!&ndash; MESSAGE VIEW PAGE &ndash;&gt;-->
+<!--<div id="messages">-->
+   			<!--<div id="message-container">-->
+		        <!--<div  class="private-messages scrollable-wrapper" id="private-message">&lt;!&ndash; messages &ndash;&gt;		            -->
+		             <!--<div  class="private-message-list-item white" ng-repeat="message in messages | orderBy:'id':true">-->
+		                <!--<div  class="msg-user-pic"><img src="{{message.pic}}" ng-src="{{message.pic}}" width="58" height="58" /></div>-->
+		<!---->
+		                <!--<div  class="msg-header">-->
+		                    <!--<div  class="msg-user-name dark-blue-font">{{message.fromusername}}</div>-->
+		                    <!--<div  class="msg-date light-blue-font">{{message.updated_at}}</div>-->
+		                <!--</div>-->
+		                <!--<div  class="private-msg dark-blue-font">-->
+		                    <!--<p> {{message.message}}-->
+		                    <!--</p>-->
+		                <!--</div>-->
+		            <!--</div>&lt;!&ndash; message-list-item end &ndash;&gt;                   -->
+                <!--</div>         -->
+       	<!--</div>&lt;!&ndash; messages end &ndash;&gt;       	-->
+       	<!---->
+       	<!--&lt;!&ndash;WRITE COMMENT&ndash;&gt; -->
+       	<!--<form ng-submit="">-->
+       	<!--<div class="comment-new private-msg-new">-->
+       	<!--&lt;!&ndash;<div class="write-comment-drop-shad"></div>&ndash;&gt;-->
+
+       	   <!--<input ng-enter="sendMessage()" type="text" ng-model="commentnewtext" name="comment-new-text" class="form-fields message_text" required="" placeholder="Write and hit enter...">-->
+
+       	<!--</div>-->
+       	<!--<input style="display:none;" type="submit" id="submit" value="Submit" />-->
+       	<!--</form>-->
+       	<!--&lt;!&ndash;WRITE COMMENT END&ndash;&gt; -->
+
+       	<!--&lt;!&ndash;a href="#"><div class="button button-light-blu new-msg-btn"><p class="button-label">SEND</p></div></a&ndash;&gt;  -->
+
+<!--</div>&lt;!&ndash; MESSAGE VIEW PAGE END &ndash;&gt;	-->
+<!--</div>-->
+<!--<page-footer></page-footer>-->
+<!--</div>-->
+
+<!-- MESSAGE VIEW PAGE -->
+<div id="conversation" class="container">
+	<div id="invisible-cover" class="hide" ng-click="hideDropdown()"></div>
+	<!-- LIST OF RECIPIENTS -->
+	<div id="recipients-list">
+		<span class="theme-text" ng-repeat="recipient in selectedUsers" ng-if="recipient.full_name != (sessionUser.firstname + ' ' + sessionUser.lastname)">{{recipient.full_name}}</span>
+		<!--<a class="theme-text" ng-click="togglePopup('inactive')"><i class="fa fa-pencil-square-o"></i></a>-->
+
+		<!-- TURN ON/OFF NOTIFICATION -->
+		<div class="settings-dropdown">
+			<a class="theme-text" class="setting-btn" ng-click="showDropdown()"><i class="fa fa-cog"></i> Settings</a>
+			<ul id="settings-dropdown" class='card-panel hide'>
+				<li>
+					<a class="grey-text" ng-click="togglePopup('inactive'); hideDropdown()">Add/remove members</a>
+					<a class="grey-text" ng-click="notificationSTT(); hideDropdown()">Turn <span ng-show="notificationStatus">off</span><span ng-show="!notificationStatus">on</span> notification from this group</a>
+				</li>
+			</ul>
+		</div>
+
+	</div>
+	<div class="popup-cover popup-inactive" >
+		<div class="popup-content-wrap popup-inactive">
+			<div id="select-users" class="popup-content popup-inactive">
+				<select-users users="groupUsers"></select-users>
+			</div>
+		</div>
+	</div>
+
+	<!--WRITE COMMENT-->
+	<form>
+		<div class="input-field">
+			<input ng-enter="sendMessage()" type="text" ng-model="commentnewtext" name="comment-new-text" required="" placeholder="Write and hit enter...">
+			<a class="grey-text camera"><i class="fa fa-camera"></i><!--input type="file"--></a>
+		</div>
+		<input style="display:none;" type="submit" id="submit" value="Submit" />
+	</form>
+	<!--WRITE COMMENT END-->
+	<div id="conversation-container" class="scrollable-wrapper">
+		<div class="conversation-item clearfix" ng-repeat="message in messages | orderBy:'id':true" ng-class="{'message-left': message.userid == message.current_user, 'message-right': message.userid != message.current_user}">
+			<div class="avatar">
+				<div class="avatar-wrap">
+					<img src="{{message.pic}}" ng-src="{{message.pic}}"/>
+				</div>
+			</div>
+			<div class="message-content" ng-class="{'light-blue lighten-4': message.userid == message.current_user, 'grey lighten-4': message.userid != message.current_user}">
+				<div class="message-sender theme-text"><span>{{message.fname}}</span></div>
+				<div class="message-date grey-text darken-4"><span>{{message.created_at}}</span></div>
+				<p class="message-text black-text clearfix"> {{message.message}}</p>
+			</div>
+		</div>
+	</div>
+
+	<!--a href="#"><div class="button button-light-blu new-msg-btn"><p class="button-label">SEND</p></div></a-->
+
+</div><!-- MESSAGE VIEW PAGE END -->

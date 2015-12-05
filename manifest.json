@@ -1,0 +1,8 @@
+{
+  "name": "On A Roll 21",
+  "short_name": "onaroll21",
+  "start_url": "/",
+  "display": "standalone",
+  "gcm_sender_id": "484192876962",
+  "gcm_user_visible_only": true
+}

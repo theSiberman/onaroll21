@@ -1,0 +1,78 @@
+<div class="container survey-page">
+    <form method="POST" accept-charset="UTF-8" parsley-validate="" id="postsurveyform">
+        <input type="hidden" name="surveyid" value="10" />
+        <input type="hidden" name="groupid" value="{{selectedGroupId}}" />
+        <input type="hidden" name="userid" value="{{userid}}" />
+        <input type="hidden" name="type" value="post" />
+        <!-- PRE SURVEY PAGE -->
+        <h1 class="survey-header center-align">POSTSURVEY</h1>
+        <p ng-hide="questions" class="center-align theme-text"><i class="fa fa-2x fa-spinner fa-pulse"></i></p>
+        <div class="survey-container card-panel no-padding" id="postSurveyContainer">
+            <div class="survey-questions" ng-repeat="question in questions"  ng-class-odd="'grey lighten-4'" ng-class-even="'grey lighten-3'">
+                <div class="theme-text"><b>{{$index + 1}}. </b> {{question.label}}
+                </div>
+                <div class="question-opinions">
+                    <div class="left">Strongly disagree</div>
+                    <div class="right">Strongly agree</div>
+                </div>
+                <div class="question-selection">
+                    <div class="radio-wrap center-align" ng-repeat="field in question.field_options.options">
+                        <input type="radio" value="{{field.label}}"
+                               name="{{question.cid}}" class="{{question.cid}}" ng-click="optionSelect('{{question.cid}}');" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="center-align" ng-show="questions">
+            <button ng-click="saveResponse();" class="btn theme">Submit</button>
+        </p>
+        <!-- /PRE SURVEY PAGE -->
+    </form>
+</div>
+
+<!--<div id="sp-page">-->
+    <!--<page-header></page-header>-->
+    <!--<div class="content-wrapper">-->
+        <!--<form method="POST" accept-charset="UTF-8" parsley-validate="" id="postsurveyform">-->
+            <!--<input type="hidden" name="surveyid" value="10" />-->
+            <!--<input type="hidden" name="groupid" value="{{selectedGroupId}}" />-->
+            <!--<input type="hidden" name="userid" value="{{userid}}" />-->
+            <!--<input type="hidden" name="type" value="post" />-->
+            <!--&lt;!&ndash; POST SURVEY PAGE &ndash;&gt;-->
+            <!--<div class="pre-survey-container under-header-shadow" id="preSurveyContainer">-->
+
+                <!--<div id="preSurveyQuestion" ng-repeat="question in questions"  ng-class-odd="'survey-odd'" ng-class-even="'survey-even'">-->
+                    <!--<div id=""><b>{{$index + 1}}.</b> {{question.label}}-->
+                    <!--</div>-->
+                    <!--<div id="preSurveyQuestionopinionBox">-->
+                        <!--<div id="preSurveyQuestionDisagree">Strongly disagree</div>-->
+                        <!--<div id="preSurveyQuestionAgree">Strongly agree</div>-->
+                        <!--<div id="clear"></div>-->
+                    <!--</div>-->
+                    <!--<div id="preSurveyQuestion-1"class="preSurveyQuestionSelections">-->
+                        <!--<input type="radio" id="preSurveyQuestionSelectionsRadio" ng-repeat="field in question.field_options.options" value="{{field.label}}"-->
+                               <!--name="{{question.cid}}"    ng-click="optionSelect('{{question.cid}}');"  />-->
+
+
+                        <!--<div id="clear"></div>-->
+                    <!--</div>-->
+
+                <!--</div>-->
+
+
+            <!--</div>-->
+
+            <!--<button ng-click="saveResponse();" class="button button-gre new-post">Submit</button>-->
+
+            <!--&lt;!&ndash; /POST SURVEY PAGE &ndash;&gt;-->
+    <!--</div>-->
+    <!--<page-footer></page-footer>-->
+<!--</div>-->
+
+
+
+
+
+
+

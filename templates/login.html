@@ -1,0 +1,74 @@
+<div class="login prelogin-page scrollable-wrapper">
+	<alert-error ng-show="flash"></alert-error>
+	<div class="row">
+		<div class="col s12 m7 l6 content-wrap card-panel white">
+			<div id="logo"></div>
+			<form action="" class="login-form" method="post" ng-submit="login();" autocomplete="false" >
+				<p class="error-message red-text center-align">{{loginMessage}}</p>
+				<div class="input-field">
+					<span class="icon username"></span>
+					<input class='uname has-icon' id="uname" placeholder="Email"  ng-model='credentials.username' type='text'>
+					<!--<label for="uname">Username</label>-->
+				</div>
+				<div class="input-field">
+					<span class="icon password"></span>
+					<input class='pword has-icon' id="pword" placeholder="Password" ng-model='credentials.password' type='password'>
+					<!--<label for="pword">Password</label>-->
+				</div>
+				<p class="configuration-link">
+					<input type="checkbox" name="remember-username" id="remember-username" class="filled-in" ng-model="remember_username" ng-click="rememberUsername();" />
+					<label for="remember-username">Remember me</label>
+				</p>
+				<p class="btn-wrap">
+					<button type="submit" class='btn theme'>LOGIN</button>
+					<button class='btn green right' ng-click="navigateTo('newAccount')">SIGN UP</button>
+				</p>
+				<p>
+					<a ng-click="navigateTo('forgot-pwd')" class="left">Reset Password</a>
+					<a ng-click="navigateTo('supportTicketOut')" class="right">Technical Support</a>
+				</p>
+
+				<input class='uname form-fields' ng-model="playerid_hidden" id="playerID"  type='hidden'>
+				<input class='uname form-fields' id="usingUniWebView"  type='hidden'>
+			</form>
+			<div class="info-wrap center-align">
+				<a class="info-link" ng-click="navigateTo('about')"><i class="fa fa-info"></i></a>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--script>
+
+
+function checkForWebView()
+{
+	if (usingUniWebView != "false") 
+	{
+	    window.location.href = "uniwebview://loginform?loaded=true";
+	}
+	//alert("usingUniWebView: "+usingUniWebView+"  typeof: "+typeof(usingUniWebView));
+}
+
+//Function called from native app to insert playerID into form field
+function updateLoginFormFields(_playerID) 
+{
+	$("#usingUniWebView").val("usingUniWebView: "+usingUniWebView);
+	$("#playerID").val(_playerID);
+	
+	return "playerID="+_playerID;
+}
+
+
+
+
+//On template load tell webview (native app) that the form elements are now accessible
+$(function() 
+{ 
+	setTimeout(checkForWebView, 700);
+});
+
+
+</script-->
+
+

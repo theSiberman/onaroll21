@@ -1,0 +1,60 @@
+/*!
+ * POPUP
+ *
+ * Styling for popup elements
+ */
+
+.popup-inactive {
+  display: none !important;
+}
+
+#transparent-cover {
+  position: fixed;
+  background: @black;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+  z-index: 1005;
+}
+
+#invisible-cover {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  background: #fff;
+  z-index: 1000;
+  opacity: 0;
+}
+
+#cover-close-btn {
+  position: fixed;
+  font-size: 1.2em;
+  top: 10px;
+  right: 15px;
+  cursor: pointer;
+  z-index: 10000;
+}
+
+.popup-cover {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+  display: table;
+
+  .popup-content-wrap {
+    display: table-cell;
+    vertical-align: middle;
+
+    .popup-content {
+      background: @white;
+      margin: 0px auto;
+    }
+  }
+}

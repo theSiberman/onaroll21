@@ -1,0 +1,13 @@
+<div id="group-users-menu" class="menu-default side-menu">
+    <!--<p ng-hide="groupUsers" class="center-align theme-text"><br><i class="fa fa-2x fa-spinner fa-pulse"></i></p>-->
+    <span class="close-link">X</span>
+    <span class="menu-header">Pick friend to chat</span>
+    <a ng-repeat="user in groupUsers" class="theme-text" ng-click="openSingleMessage(user[0]); closeSideMenu();">
+        <div class="avatar">
+            <div class="avatar-wrap">
+                <img src="{{user[0].picture}}" />
+            </div>
+        </div>
+        <span>{{user[0].firstname}} {{user[0].lastname}}</span>
+    </a>
+</div>

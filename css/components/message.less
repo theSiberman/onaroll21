@@ -1,0 +1,302 @@
+/*!
+ * MESSAGE
+ *
+ * Styling for messaging features
+ */
+
+#messages {
+  #messages-list-wrap {
+      position:relative;
+      overflow:hidden;
+  }
+
+  .collection {
+      > li {
+          width: 100%;
+          padding-left: 75px;
+          cursor: pointer;
+          height: auto;
+          min-height: 73px;
+          .transition-all();
+
+          .avatar {
+              width: 50px;
+              height: 50px;
+
+              .avatar-wrap {
+                  width: 50px;
+                  height: 50px;
+
+                  img {
+                      width: 50px;
+                  }
+              }
+
+              &.absolute {
+                  position: absolute;
+                  left: 13px;
+              }
+          }
+
+          .title {
+              font-size: 15px;
+
+              &.limit {
+                  max-width: 80%;
+              }
+          }
+
+          .message-text {
+              color: @black;
+              font-size: 14px;
+          }
+
+          .time-text {
+              position: absolute;
+              top: 10px;
+              right: 12px;
+              font-size: 11px;
+          }
+
+          &:hover {
+              background: #F1F1F1;
+          }
+      }
+
+      &.centered-name {
+          .title {
+              margin-top: 12px;
+          }
+      }
+
+      &.select-list {
+          label {
+              position: absolute;
+              width: 100%;
+              height: 100%;
+              padding-top: 12px;
+              padding-left: 55px;
+              left: 0;
+              top: 0;
+
+              &:before {
+                  top: 25px;
+                  left: 18px;
+              }
+
+              &:after {
+                  top: 25px;
+                  left: 17px;
+              }
+          }
+
+          .title {
+              margin-left: 10px;
+              display: inline-block;
+              position: relative;
+              top: -20px;
+          }
+      }
+  }
+}
+
+#conversation {
+  #recipients-list {
+    > span {
+        display: inline-block;
+        font-size: 14px;
+        height: 30px;
+        line-height: 30px;
+        padding: 0 12px;
+        border-radius: 16px;
+        background-color: #fbfbfb;
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+
+    > a {
+        font-size: 17px;
+        margin-right: 7px;
+    }
+
+    .settings-dropdown {
+        position: relative;
+
+        > a {
+            font-size: 13px;
+        }
+
+        ul {
+            position: absolute;
+            left: 0;
+            padding: 5px 0;
+            width: 240px;
+            box-sizing: content-box;
+            z-index: 10002;
+
+            a {
+                display: inline-block;
+                font-size: 13px;
+                padding: 2% 3%;
+                height: 20px;
+                width: 94%;
+
+                &:hover {
+                    color: @white !important;
+                    background: @theme;
+                }
+            }
+        }
+    }
+  }
+
+  .switch {
+      .lever {
+          background: lighten(@theme-lighter-4, 10%);
+
+          &:after {
+              background: @theme-lighter-2;
+          }
+      }
+  }
+
+  form {
+      input[type="text"] {
+        padding: 0 30px 0 10px;
+      }
+
+      .camera {
+          position: absolute;
+          top: 8px;
+          right: 5px;
+      }
+  }
+
+  #conversation-container {
+      margin-top: 20px;
+
+      .conversation-item {
+
+          &.message-left {
+              .avatar {
+                  float: left;
+              }
+
+              .message-content {
+                  float: left;
+                  margin-left: 10px;
+
+                  .message-sender {
+                      float: left;
+                  }
+
+                  .message-date {
+                      float: right;
+                  }
+              }
+          }
+
+          &.message-right {
+              .avatar {
+                  float: right;
+              }
+
+              .message-content {
+                  float: right;
+                  margin-right: 10px;
+
+                  .message-sender {
+                      float: right;
+                  }
+
+                  .message-date {
+                      float: left;
+                  }
+              }
+          }
+
+          .avatar {
+              width: 50px;
+              height: 50px;
+
+              .avatar-wrap {
+                  width: 50px;
+                  height: 50px;
+                  border-radius: 50%;
+                  z-index: 1;
+
+                  img {
+                      width: 50px;
+                      z-index: 0;
+                  }
+              }
+          }
+
+          .message-content {
+              width: 50%;
+              margin-bottom: 20px;
+              padding: 8px 10px;
+              background: @white;
+              border-radius: 7px;
+              min-height: 50px;
+
+              .message-sender {
+                  font-weight: 400;
+              }
+
+              .message-date {
+                  font-size: 12px;
+              }
+
+              .message-text {
+                  padding-top: 5px;
+                  font-size: 14px;
+                  overflow-wrap: break-word;
+                  word-wrap: break-word;
+              }
+          }
+      }
+  }
+}
+
+#select-users {
+    height: 80%;
+    overflow-y: scroll;
+
+    div:first-child {
+        padding-top: 5px;
+    }
+
+    button#select-users-btn {
+        font-size: 13px;
+        padding: 0 14px;
+    }
+
+    .red-text {
+        margin-top: 10px;
+    }
+
+    .select-list-wrap {
+        position: relative;
+        height: 100%;
+
+        .select-list {
+            overflow: visible;
+            position: absolute;
+            width: 100%;
+            height: 140%;
+        }
+    }
+}
+
+@media screen and (min-width: 450px) {
+    #select-users {
+        width: 400px;
+    }
+}
+
+@media screen and (max-width: 599px) {
+    .message-content {
+        width: 80% !important;
+    }
+}

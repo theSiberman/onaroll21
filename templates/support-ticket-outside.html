@@ -1,0 +1,38 @@
+<div class="support-ticket prelogin-page">
+	<div class="row">
+		<div class="col s12 m7 l6 content-wrap card-panel white">
+			<div id="logo"></div>
+			<form id="feedbackForm" name="feedbackForm" ng-submit="sendTicket();">
+				<h3>TECHNICAL SUPPORT TICKET</h3>
+				<div class="error-message red-text">{{errorMessage}}</div>
+				<div class="input-field">
+					<input type="text" name="name" ng-model="ticket.name" placeholder="Your name">
+				</div>
+				<div class="input-field">
+					<input type="text" name="email"  ng-model="ticket.email" placeholder="Your email">
+				</div>
+				<div class="input-field select-wrap">
+					<span class="select-arrow"></span>
+					<select class="browser-default" ng-model="ticket.type">
+						<option value disabled selected>Select a ticket subject</option>
+						<option value="I have an idea!" >I have an idea!</option>
+						<option  value="I have a technical issue" >I have a technical issue</option>
+						<option  value="Report abuse" >Report abuse</option>
+						<option  value="Like to get involved!" >I'd like to get involved with the development of OAR21</option>
+					</select>
+				</div>
+				<div class="input-field">
+					<textarea class="materialize-textarea" name="support_text" ng-model="ticket.feedback" placeholder="Your feedback or issue"></textarea>
+				</div>
+				<p class="btn-wrap">
+					<a class='btn theme' href="/#/">CANCEL</a>
+					<button type="submit" class='btn green right'>SUBMIT</button>
+				</p>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+
+

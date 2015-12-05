@@ -1,0 +1,33 @@
+/*!
+ * SETTINGS
+ *
+ * Styling for setting pages
+ */
+
+#account-settings {
+  .avatar {
+    height: 140px;
+
+    .avatar-wrap {
+      width: 150px;
+      height: 150px;
+      border: 1px solid lighten(@grey-lighter-4, 20%);
+
+      img {
+        width: 150px;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 350px) {
+  #account-settings {
+    .avatar {
+
+      .avatar-wrap {
+        width: 130px;
+        height: 130px;
+      }
+    }
+  }
+}

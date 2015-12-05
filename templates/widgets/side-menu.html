@@ -1,0 +1,23 @@
+<div id="side-menu" class="menu-default side-menu">
+    <span class="close-link">X</span>
+    <a class="avatar-item" ng-click="navigateTo('accountSettings')">
+        <div class="avatar">
+            <div class="avatar-wrap">
+                <img ng-src="{{sessionUser.picture}}" />
+            </div>
+        </div>
+        <div class="user-name">
+            <span class="theme-text">{{sessionUser.firstname}} {{sessionUser.lastname}}</span><br>
+            <span class="grey-text">Edit</span>
+        </div>
+    </a>
+    <a class="menu-item" ng-click="navigateTo('notifications')"><i class="fa fa-bell-o theme-text"></i> <span class="grey-text">Notifications</span></a>
+    <a class="menu-item" ng-click="navigateTo('howto')"><i class="fa fa-play-circle-o theme-text"></i> <span class="grey-text">How To Play</span></a>
+    <a class="menu-item" ng-click="navigateTo('accountSettings')"><i class="fa fa-user theme-text"></i> <span class="grey-text">Account Settings</span></a>
+    <a class="menu-item" ng-click="navigateTo('notificationUserAdmin')"><i class="fa fa-cog theme-text"></i> <span class="grey-text">Notification Settings</span></a>
+    <a class="menu-item" ng-click="navigateTo('support')"><i class="fa fa-question theme-text"></i> <span class="grey-text">FAQ</span></a>
+    <a class="menu-item" ng-click="navigateTo('supportTicket')"><i class="fa fa-keyboard-o theme-text"></i> <span class="grey-text">Contact Support</span></a>
+    <a class="menu-item" ng-click="logout()"><i class="fa fa-hand-o-left theme-text"></i> <span class="grey-text">Logout</span></a>
+</div>
+
+

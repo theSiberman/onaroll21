@@ -1,0 +1,28 @@
+<div id="sp-nav">
+    <slide-menu></slide-menu>
+</div>
+<div id="sp-page">
+    <!-- NEW POST PAGE -->
+    <page-header></page-header>
+    <div id="new-post" ng-controller="SupportTicketCtrl">
+        <form id="postForm" name="postForm" ng-submit="sendFeedback(feedback)">
+            <div class="post-new">
+                <p>
+                    <textarea name="status_text" ng-model="feedback" class="status_text" required  placeholder="How did you roll?"></textarea>
+                    <img ng-src="{{imageSrc}}" />
+                </p>
+            </div>
+            <div id="postNewButtons">
+                <div class="button button-half-width fileUpload button-ora" >
+                    <img class="media-icon" src="images/media-camera.png" alt="" />
+                    <input type="file" class="status_file" data-file="post.status_file" upload-file accept="image/*" capture="camera" ng-hide="hideFileUpload=0" />
+                </div>
+                <div class="button-half-width">
+                    <input type="submit" class="button button-gre post-btn" value="POST" />
+                </div>
+
+            </div>
+        </form>
+    </div>
+    <page-footer></page-footer>
+</div>

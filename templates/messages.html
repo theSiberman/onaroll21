@@ -1,0 +1,70 @@
+<!--<div id="sp-nav">-->
+    <!--<slide-menu></slide-menu>-->
+<!--</div>-->
+<!--<div id="sp-page">-->
+<!--<page-header></page-header>-->
+<!--&lt;!&ndash; MESSAGES PAGE &ndash;&gt;-->
+<!--<div class="content-wrapper">-->
+<!--<div id="messages">-->
+
+   <!---->
+        <!--<div  class="messages under-header-shadow content-body-with-btns scrollable-wrapper">&lt;!&ndash; messages &ndash;&gt;-->
+            <!--<div  class="msg-search very-light-blue light-blue-font"><input type="text"  ng-model="q" placeholder="filter friends..."  /></div>-->
+            <!---->
+            <!---->
+            <!---->
+            <!--<div  class="message-list-item white" ng-repeat="message in messages | filter:q | orderBy:'id':true" ng-click="messageView({{message.from}}, '{{message.username}}')">-->
+                <!--<div  class="msg-user-pic"><img src="{{message.pic}}" width="60" height="60" /></div>-->
+
+                <!--<div  class="msg-header">-->
+                    <!--<div  class="msg-user-name dark-blue-font">{{message.type}}  {{message.username}}</div>-->
+                    <!--<div  class="msg-date light-blue-font">{{message.updated_at}}</div>-->
+                <!--</div>-->
+                <!--<div  class="msg dark-blue-font">-->
+                    <!--<p>{{message.message}}-->
+                    <!--</p>-->
+                <!--</div>-->
+            <!--</div>&lt;!&ndash; message-list-item end &ndash;&gt;-->
+
+            <!---->
+       	<!--</div>&lt;!&ndash; messages end &ndash;&gt;-->
+
+       	<!--<a ng-click="navigateTo('nmSelectGroup')"><button class="button button-light-blu new-msg-btn">NEW MESSAGE</button></a>-->
+
+  <!---->
+
+<!--</div>&lt;!&ndash; MESSAGES PAGE END &ndash;&gt;-->
+<!--</div>	-->
+<!--<page-footer></page-footer>-->
+<!--</div>-->
+
+<div id="messages" class="container">
+    <div class="btn-group center-align">
+        <a ng-click="createNewConversation()"><button class="btn theme">NEW MESSAGE</button></a>
+    </div><br>
+    <!--<p ng-hide="messages" class="center-align theme-text"><i class="fa fa-2x fa-spinner fa-pulse"></i></p>-->
+    <!--<div class="input-field" ng-if="messages">-->
+        <!--<input type="text" ng-model="q" placeholder="filter friends..."  />-->
+    <!--</div>-->
+    <div id="messages-list-wrap">
+        <ul class="collection messages-list">
+            <li class="collection-item message-item avatar" ng-repeat="message in messages" ng-click="openMessage({{message.conversation_id}});">
+                <div class="avatar absolute">
+                    <div class="avatar-wrap">
+                        <img src="{{message.pic}}" />
+                    </div>
+                </div>
+                <div class="title limit theme-text">
+                <span ng-repeat="name in message.members" ng-if="name.full_name != (sessionUser.firstname + ' ' + sessionUser.lastname)">
+                    <span ng-if="message.members.length == 2">{{name.full_name}}</span>
+                    <span ng-if="message.members.length > 2">{{name.full_name.split(' ')[0]}}</span>
+                    <span ng-if="message.members.length > 2">,</span>
+                </span>
+                </div>
+                <p class="message-text">{{message.message | cut:true:25:' ...'}}</p>
+                <span class="time-text grey-text darken-3">{{message.updated_at}}</span>
+            </li>
+        </ul>
+    </div>
+</div>
+

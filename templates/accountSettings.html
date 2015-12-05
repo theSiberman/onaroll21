@@ -1,0 +1,123 @@
+<!-- USER SETTINGS -->
+<div id="account-settings">
+	<div class="container card-panel">
+		<form id="postForm" name="postForm"  enctype='multipart/form-data' ng-submit="updateUser(postForm)"id="user-setting" >
+			<div class="row">
+				<div class="avatar col s6">
+					<div class="avatar-wrap">
+						<img src="{{userAvatar}}?random={{randomIMG}}" id="avatar" height="100%" />
+					</div>
+				</div>
+				<div class="col s6">
+					<input class='fname form-fields' ng-model='profile.firstname' placeholder='First name' type='text'>
+					<input class='lname form-fields' ng-model='profile.lastname'  placeholder='Last name' type='text'>
+					<button type="button" onClick="document.getElementById('fileInp').click();" class="btn theme">Upload</button>
+					<!-- Hidden elements to trigger file upload -->
+					<input style="display: none;" class="button button-new_avatar" type="file" id="fileInp" data-file="profile.status_file" upload-file model="myFile" onchange="angular.element(this).scope().file_changed(this)" accept="image/*" value="UPLOAD">
+				</div>
+			</div>
+			<a id="resetAvatar" ng-click="resetAvatar()" class="theme-text">Undo Avatar Change</a>
+			<p>&nbsp;</p>
+			<div class="input-field">
+				<input class='email form-fields' ng-model='profile.email' placeholder='Email' type='text'>
+				<input class='pword form-fields' ng-model='profile.password' placeholder='New Password'type='password'>
+				<input class='pword form-fields' ng-model='profile.confirmpassword' placeholder='Confirm New Password' type='password'>
+			</div>
+			<div class="error-message red-text center-align">{{errorMessage}}</div>
+			<div class="input-field center-align">
+				<button type="submit" class="btn green" ng-click="updateUser(postForm)">UPDATE</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+
+<!--<div class="content-body-with-btns account-settings under-header-shadow scrollable-wrapper" >-->
+
+	<!--<div class="account-settings-instructions light-blue margin-bottom-20">-->
+	<!--<p>Change your account details below<br>-->
+	<!--Select UPDATE to save</p>-->
+	<!--</div>-->
+	<!---->
+	<!---->
+	<!---->
+	<!---->
+	<!---->
+	<!--<form class="account-settings-form"  id="postForm" name="postForm"  enctype='multipart/form-data' ng-submit="updateUser(postForm)"id="user-setting" >-->
+		<!---->
+		<!--&lt;!&ndash; avatar &ndash;&gt;-->
+		<!--<div  class="user-data-top margin-bottom-20">-->
+		<!---->
+		    <!--<div class="avatar">-->
+		        <!--<div class="user-pic">-->
+		            <!--<img src="{{userAvatar}}?random={{randomIMG}}" id="avatar" height="100%" />-->
+		        <!--</div>-->
+		        <!--<p class="user-name light-blue">{{sessionUser.firstname}} {{sessionUser.lastname}}</p>-->
+		        <!--&lt;!&ndash;div id="resetAvatar"><a href="javascript:;" ng-click="resetAvatar();">Undo image change</a></div&ndash;&gt;-->
+		        <!---->
+		        <!---->
+		        <!---->
+		    <!--</div>-->
+		    <!---->
+		    <!---->
+		    <!---->
+		 <!--</div>-->
+		<!--&lt;!&ndash; avatar end &ndash;&gt;-->
+		<!--<button type="button" id="resetAvatar" ng-click="resetAvatar()" class="button button-undo-image">Undo image change</button>-->
+		<!---->
+		<!---->
+			<!--<div class="account-settings-form-label">Username</div>-->
+			<!--<input class='uname form-fields' ng-model='profile.username' disabled placeholder='User name' required type='text'>-->
+			<!---->
+			<!--<div class="account-settings-form-label">Avatar</div>-->
+			<!--<button type="button" onClick="document.getElementById('fileInp').click();" class="button button-new_avatar">Select Image</button>	-->
+			<!---->
+			<!--<div class="account-settings-form-label">First name</div>-->
+			<!--<input class='fname form-fields' ng-model='profile.firstname' placeholder='First name' required type='text'>-->
+			<!---->
+			<!--<div class="account-settings-form-label">Last name</div>-->
+			<!--<input class='lname form-fields' ng-model='profile.lastname'  placeholder='Last name' required type='text'>-->
+
+			<!--&lt;!&ndash; Removed Roller Name as it's not being used in the game &ndash;&gt;-->
+			<!--&lt;!&ndash;div class="account-settings-form-label">Roller name</div>-->
+			<!--<input class='screenname form-fields' ng-model='profile.screenname'  placeholder='Roller name' required type='text'&ndash;&gt;-->
+			<!---->
+			<!--<div class="account-settings-form-label">Password</div>-->
+			<!--<input class='pword form-fields' ng-model='profile.password' placeholder='Password'type='password'>-->
+			<!---->
+			<!--<div class="account-settings-form-label">Confirm Password</div>-->
+			<!--<input class='pword form-fields' ng-model='profile.confirmpassword' placeholder='Confirm Password' type='password'>-->
+			<!---->
+			<!--<div class="account-settings-form-label">Email</div>-->
+			<!--<input class='email form-fields' ng-model='profile.email' placeholder='Email' required type='text'>-->
+			<!---->
+			<!--<div class="account-settings-form-label">State</div>-->
+			<!--<select  ng-model='profile.state'>-->
+				<!--<option value="ACT" >ACT</option>-->
+				<!--<option  value="JBT" >JBT</option>-->
+				<!--<option  value="NSW" >NSW</option>-->
+				<!--<option  value="NT" >NT</option>-->
+				<!--<option  value="QLD" >QLD</option>-->
+				<!--<option  value="SA" >SA</option>-->
+				<!--<option  value="TAS" >TAS</option>-->
+				<!--<option  value="VIC" >VIC</option>-->
+				<!--<option  value="WA" >WA</option>-->
+			  <!---->
+			<!--</select>-->
+			<!---->
+		<!---->
+			<!---->
+			<!---->
+		<!--&lt;!&ndash; Hidden elements to trigger file upload &ndash;&gt;-->
+		<!--<input style="display: none;" class="button button-new_avatar" type="file" id="fileInp" data-file="profile.status_file" upload-file model="myFile" onchange="angular.element(this).scope().file_changed(this)" accept="image/*" capture="camera" value="UPLOAD">-->
+		<!---->
+		<!---->
+	<!--</form>-->
+	<!---->
+	<!---->
+	<!---->
+	<!---->
+	<!---->
+<!--</div>-->
+<!--&lt;!&ndash; account-settings end &ndash;&gt;-->
+<!--<button type="submit" class="button button-light-blu account-settings-btn" ng-click="updateUser(postForm)">UPDATE</button>-->

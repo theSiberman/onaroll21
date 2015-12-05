@@ -1,0 +1,165 @@
+<!-- JOURNAL PAGE -->
+<div id="journal" class="container">
+    <p ng-hide="complete" class="center-align theme-text"><i class="fa fa-2x fa-spinner fa-pulse"></i></p>
+
+    <div id="progress" class="card-panel" ng-show="complete">
+        <!--<canvas class="canvas-progress" id="canvas-progress"></canvas>-->
+        <div class="progress-wrapper center-align" ng-show="totalMissions">
+            <div class="progress-circle">
+                <div class="progress-general-info grey-text">
+                    <span class="percent theme-text">{{progressPercent}} %</span> <br>
+                    <span class="days">{{completedDays}} / {{totalMissions}} DAYS</span>
+                </div>
+                <div
+                        round-progress
+                        max="100"
+                        current="dialProgress"
+                        color="#277aa1"
+                        bgcolor="#eee"
+                        radius="{{progressRadius}}"
+                        stroke="10"
+                        clockwise="true"
+                        animation="easeInOutQuart">
+                </div>
+            </div>
+            <div class="progress-detailed-info">
+                <span>Days remaining: {{totalMissions - completedDays}}</span><br>
+                <span>Missions complete: {{completedMissions}}</span><br>
+                <span>Total likes: {{totalLikes}}</span><br>
+                <!--<span>Team score: </span>-->
+            </div>
+        </div>
+    </div>
+    <div id="journal-tabs" class="card-panel" ng-show="complete">
+        <div ng-if="!hideGroupSelection" class="row">
+            <script>
+                $('ul#tabs-1').tabs();
+            </script>
+            <div class="col s12">
+                <ul id="tabs-1" class="tabs tab-header">
+                    <li class="tab col s3"><a class="active" href="#tab-groups"><i class="fa fa-users"></i> TEAMS</a></li>
+                    <li class="tab col s3" ng-class="{disabled: currentGroup===0}"><a href="#tab-mood"><i class="fa fa-smile-o"></i> MOODS</a></li>
+                    <li class="tab col s3" ng-class="{disabled: currentGroup===0}"><a href="#tab-note"><i class="fa fa-bookmark-o"></i> NOTES</a></li>
+                    <li class="tab col s3" ng-class="{disabled: currentGroup===0}"><a href="#tab-photo"><i class="fa fa-photo"></i> PHOTOS</a></li>
+                </ul>
+            </div>
+            <div class="col s12 tab-content">
+                <div id="tab-groups" class="col s12">
+                    <group-list></group-list>
+                </div>
+                <div id="tab-mood" class="col s12">
+                    <mood-map></mood-map>
+                </div>
+                <div id="tab-note" class="col s12">
+                    <wall-widget></wall-widget>
+                </div>
+                <div id="tab-photo" class="col s12">
+                    <photo-montage></photo-montage>
+                </div>
+            </div>
+        </div>
+        <div ng-if="hideGroupSelection" class="row">
+            <div class="col s12">
+                <ul id="tabs-2" class="tabs tab-header">
+                    <li class="tab col s4" id="mood-tab"><a href="#tab-mood"><i class="fa fa-smile-o"></i> MOODS</a></li>
+                    <li class="tab col s4"><a href="#tab-note"><i class="fa fa-bookmark-o"></i> NOTES</a></li>
+                    <li class="tab col s4"><a href="#tab-photo"><i class="fa fa-photo"></i> PHOTOS</a></li>
+                </ul>
+            </div>
+            <div class="col s12 tab-content">
+                <div id="tab-mood" class="col s12">
+                    <mood-map></mood-map>
+                </div>
+                <div id="tab-note" class="col s12">
+                    <wall-widget></wall-widget>
+                </div>
+                <div id="tab-photo" class="col s12">
+                    <photo-montage></photo-montage>
+                </div>
+            </div>
+            <script>
+                $('ul#tabs-2').tabs();
+
+                setTimeout(function() {
+                    $('ul#tabs-2 #mood-tab a').trigger('click');
+                }, 1000);
+            </script>
+        </div>
+    </div>
+</div>
+
+<!--<div class="content-wrapper">-->
+<!--<div  class="user-data-top under-header-shadow">-->
+    <!--<div class="avatar" ng-show="complete">-->
+        <!--<div class="user-pic">-->
+            <!--<img ng-src="{{sessionUser.picture}}?mod={{randomIMG}}" height="100%" imageonload="dothis();" />-->
+        <!--</div>-->
+        <!--<p class="user-name light-blue">{{sessionUser.firstname}} {{sessionUser.lastname}}</p>-->
+    <!--</div>-->
+    <!--<div class="progress">-->
+        <!--&lt;!&ndash;<canvas class="canvas-progress" id="canvas-progress"></canvas>&ndash;&gt;-->
+        <!--<div class="progress-wrapper" ng-show="totalMissions">-->
+            <!--<div class="progress">{{completedMissions}} <br>-->
+                <!--<span class="mission">MISSIONS</span><br>-->
+                <!--<span>COMPLETED</span><br>-->
+                <!--<span class="days">{{completedDays}} / {{totalMissions}} DAYS</span>-->
+            <!--</div>-->
+            <!--<div-->
+                <!--round-progress-->
+                <!--max="100"-->
+                <!--current="dialProgress"-->
+                <!--color="#F4D28D"-->
+                <!--bgcolor="#1B5979"-->
+                <!--radius="{{progressRadius}}"-->
+                <!--stroke="10"-->
+                <!--clockwise="true"-->
+                <!--animation="easeInOutQuart">-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+
+<!--<div class="slider-container" ng-show="complete">-->
+    <!--<div class="slider-nav" ng-class="{ noscroll:currentGroup===0 }">-->
+        <!--<div class="slider-icon slider-icon-0" toggle data-target="displayGroupList" ng-class="{ active:displayGroupList===1 }" ng-hide="hideGroupSelection"></div>-->
+        <!--<div class="slider-icon slider-icon-1" toggle data-target="displayMoodMap" ng-class="{ active:displayMoodMap===1,disabled:currentGroup===0 }"></div>-->
+        <!--&lt;!&ndash;<a class="slider-icon" toggle data-target="displayMoodMap" ng-class="{ active:displayMoodMap===1,disabled:currentGroup===0 }"><i class="fa fa-smile-o"></i></a>&ndash;&gt;-->
+        <!--<div class="slider-icon slider-icon-2" toggle data-target="displayWall" ng-class="{ active:displayWall===1,disabled:currentGroup===0 }"></div>-->
+        <!--&lt;!&ndash;<a class="slider-icon" toggle data-target="displayWall" ng-class="{ active:displayWall===1,disabled:currentGroup===0 }"><i class="fa fa-lock"></i></a>&ndash;&gt;-->
+        <!--<div class="slider-icon slider-icon-3" toggle data-target="displayPhotoMontage" ng-class="{ active:displayPhotoMontage===1,disabled:currentGroup===0 }"></div>-->
+        <!--&lt;!&ndash;<a class="slider-icon" toggle data-target="displayPhotoMontage" ng-class="{ active:displayPhotoMontage===1,disabled:currentGroup===0 }"><i class="fa fa-picture-o"></i></a>&ndash;&gt;-->
+        <!--&lt;!&ndash;<div class="slider-icon slider-icon-4" toggle data-target="displayWordcloud" ng-class="{ active:displayWordcloud===1,disabled:currentGroup===0 }"></div>&ndash;&gt;-->
+    <!--</div>-->
+    <!--<div class="arrow"></div>-->
+<!--</div>-->
+
+<!--<div class="slider-drop-shad" ng-show="complete"></div>-->
+
+<!--<div class="user-data-btm" ng-show="complete">-->
+    <!--<mood-map ng-show="displayMoodMap"></mood-map>-->
+    <!--<group-list ng-show="displayGroupList"></group-list>-->
+    <!--<wall-widget ng-show="displayWall"></wall-widget>-->
+    <!--<photo-montage ng-show="displayPhotoMontage"></photo-montage>-->
+    <!--<word-cloud ng-show="displayWordcloud"></word-cloud>-->
+<!--</div>&lt;!&ndash;user-data-btm end&ndash;&gt;-->
+
+    <!--<a ng-show="complete && !canDisplay('currentmission')" ng-hide="canDisplay('currentmission')">-->
+
+
+    <!--<button ng-show="complete" class="button button-ora view-mission" ng-click="navigateTo('mission')">-->
+
+        <!--&lt;!&ndash;<div id="hideCurrentMission" style="width: 100%; height:100%; position: absolute; z-index: 1000; background-color: grey;opacity: 0.4;&ndash;&gt;-->
+        <!--&lt;!&ndash;filter: alpha(opacity=40);"></div>&ndash;&gt;-->
+
+        <!--CURRENT MISSION-->
+    <!--</button>-->
+<!--</a>-->
+
+
+
+<!--<a ng-show="complete && !canDisplay('play')" ng-click="navigateTo('play')" ng-hide="canDisplay('play')" class="journal-buttons">-->
+    <!--<button class="button button-gre view-mission" ng-show="complete">ROLL</button>-->
+    <!--<button ng-show="complete && allCompleted" class="button button-blu view-mission">GOAL COMPLETED!</button>-->
+<!--</a>-->
+<!--&lt;!&ndash;<button class="button button-light-blu view-mission" ng-show="!currentGroup"></button>&ndash;&gt;-->
+<!--</div>-->
