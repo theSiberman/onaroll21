@@ -1,9 +1,6 @@
 FROM alpine:3.2
-
 MAINTAINER Simon Berman <spb@siberman.com>
-
-ADD . /data/http
-
-VOLUME ['/data/http/']
-
-CMD ["echo", "creating ciinabox data container"]
+RUN apk --update add git && mkdir /data/http && rm -rf /var/cache/apk/*
+RUN cd && /data/http && git clone https://github.com/RHoKAustralia/onaroll21.git .
+VOLUME ["/data/http"]
+CMD ["true"]
